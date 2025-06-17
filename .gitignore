@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__
+database
+shape_predictor_68_face_landmarks.dat
+myenv/
+nullpointers-123-firebase-adminsdk-z2xr3-13671631a7.json
+nullpointers-123-firebase-adminsdk-z2xr3-11439b48a0.json
+venv/
+

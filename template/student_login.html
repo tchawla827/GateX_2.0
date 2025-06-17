@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: white;
+            position: relative;
+            background-color: #000;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ url_for("static", filename="images/slider-img.png") }}'); /* Background image */
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 2em;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .login-button {
+            background-color: rgba(76, 175, 80, 0.8);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            margin: 0 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-button:hover {
+            background-color: rgba(69, 160, 73, 0.9);
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 360px;
+            box-sizing: border-box;
+        }
+
+        input, select {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            font-size: 1em;
+            transition: border 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            border-color: #24A0ED;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #24A0ED;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2196F3;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 15px;
+            }
+
+            .form-container {
+                width: 100%;
+                padding: 20px;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+
+            .login-button {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <div class="button-container">
+        <button class="login-button" onclick="showForm('student')">Student Login</button>
+        <button class="login-button" onclick="showForm('teacher')">Teacher Login</button>
+    </div>
+
+    <!-- Display student form by default -->
+    <div id="student-form" class="form-container">
+        <form action="{{ url_for('student_login') }}" method="post">
+            <label for="student-id">Student ID</label>
+            <input type="text" id="student-id" name="rollNumber" placeholder="Enter Student ID" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="student-password" name="password" placeholder="Enter Password" required>
+
+            <input type="submit" value="Login">
+        </form>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="error-message">
+                    <p>{{ messages[0] }}</p>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Teacher form is hidden by default -->
+    <div id="teacher-form" class="form-container" style="display: none;">
+        <form action="{{ url_for('teacher_login') }}" method="post">
+            <label for="teacher-name">Teacher's Name</label>
+            <input type="text" id="teacher-name" name="teacher_name" placeholder="Enter your name" required>
+
+            <label for="teacher-password">Password</label>
+            <input type="password" id="teacher-password" name="password" placeholder="Enter password" required>
+
+            <input type="submit" value="Login">
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="error-message">
+                    <p>{{ messages[0] }}</p>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showForm(type) {
+            document.getElementById('student-form').style.display = type === 'student' ? 'block' : 'none';
+            document.getElementById('teacher-form').style.display = type === 'teacher' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
