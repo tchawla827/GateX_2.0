@@ -11,7 +11,9 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-from firebase_admin import storage
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 from detection.face_matching import detect_faces, align_face
 from detection.face_matching import extract_features, match_face
 from utils.configuration import load_yaml
@@ -29,8 +31,13 @@ firebase_admin.initialize_app(
     cred,
     {
         "databaseURL": config_file_path["firebase"]["databaseURL"],
-        "storageBucket": config_file_path["firebase"]["storageBucket"],
     },
+)
+
+cloudinary.config(
+    cloud_name=config_file_path["cloudinary"]["cloud_name"],
+    api_key=config_file_path["cloudinary"]["api_key"],
+    api_secret=config_file_path["cloudinary"]["api_secret"],
 )
 
 
@@ -41,9 +48,12 @@ def upload_database(filename):
     """
     valid = False
 
-    if storage.bucket().get_blob(filename):
+    try:
+        cloudinary.api.resource(filename)
         valid = True
         error = f"<h1>{filename} already exists in the database</h1>"
+    except cloudinary.exceptions.NotFound:
+        pass
 
     if not filename[:-4].isdigit():
         valid = True
@@ -52,9 +62,7 @@ def upload_database(filename):
     if not valid:
 
         filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        bucket = storage.bucket()
-        blob = bucket.blob(filename)
-        blob.upload_from_filename(filename)
+        cloudinary.uploader.upload(filename, public_id=os.path.basename(filename))
         error = None
 
     return valid, error
