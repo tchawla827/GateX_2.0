@@ -7,7 +7,6 @@ from detection.face_matching import *
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-from firebase_admin import storage
 
 
 def match_with_database(img, database):
@@ -51,7 +50,6 @@ firebase_admin.initialize_app(
     cred,
     {
         "databaseURL": "https://face-recognition-486cb-default-rtdb.firebaseio.com/",
-        "storageBucket": "face-recognition-486cb.appspot.com",
     },
 )
 
