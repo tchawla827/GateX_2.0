@@ -2,5 +2,8 @@ teacher:
   password_hash: pbkdf2:sha256:150000$25Q5cg4m$6f959f66588efd66dd713f3f6b4a1efd66a9fbc4bb381d44f5a5189781845ff6
 firebase:
   databaseURL: "https://nullpointers-123-default-rtdb.firebaseio.com/"
-  storageBucket: "nullpointers-123.appspot.com"
   pathToServiceAccount: "nullpointers-123-firebase-adminsdk-z2xr3-4e681f2a90.json"
+cloudinary:
+  cloud_name: "your_cloud_name"
+  api_key: "your_api_key"
+  api_secret: "your_api_secret"
