@@ -1,6 +1,6 @@
 from flask import Flask, render_template, get_flashed_messages
 from flask import request, redirect, url_for, Response, flash, jsonify
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from markupsafe import escape
 from jinja2 import select_autoescape, FileSystemLoader
@@ -158,7 +158,7 @@ def teacher_login():
         teacher_name = request.form.get("teacher_name")
         password = request.form.get("password")
 
-        if teacher_name == "admin" and password == "admin123":
+        if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
             return redirect(url_for("home"))
         else:
             flash("Incorrect credentials")
@@ -511,6 +511,7 @@ def submit_info():
     userType = request.form.get("userType")
     hostel = request.form.get("classes")
     password = request.form.get("password")
+    hashed_password = generate_password_hash(password)
 
     studentId, _ = os.path.splitext(filename)
     fileName = os.path.join(app.config["UPLOAD_FOLDER"], filename)
@@ -532,7 +533,7 @@ def submit_info():
             "phone": phone,
             "userType": userType,
             "classes": hostel,
-            "password": password,
+            "password": hashed_password,
             "embeddings": embedding[0]["embedding"],
         }
     }
@@ -619,7 +620,7 @@ def student_login():
                     break
 
     if matching_student:
-        if matching_student["password"] == password:
+        if check_password_hash(matching_student["password"], password):
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             flash("Incorrect password")
