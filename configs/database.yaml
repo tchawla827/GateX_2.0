@@ -3,4 +3,4 @@ teacher:
 firebase:
   databaseURL: "https://nullpointers-123-default-rtdb.firebaseio.com/"
   storageBucket: "nullpointers-123.appspot.com"
-  pathToServiceAccount: "C:/Users/tavis/Desktop/pro-copy - Copy/nullpointers-123-firebase-adminsdk-z2xr3-11439b48a0.json"
+  pathToServiceAccount: "nullpointers-123-firebase-adminsdk-z2xr3-4e681f2a90.json"
