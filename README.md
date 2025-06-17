@@ -49,8 +49,8 @@ GateX offers the following features:
 4. **Student Dashboard**:  
    Track request history.
 
-5. **Data Integrity**:  
-   Firebase integration ensures real-time and secure data storage.
+5. **Data Integrity**:
+   Firebase Realtime Database ensures instant data updates, while Cloudinary stores uploaded images securely.
 
 6. **User Roles**:  
    Distinct functionalities for admins and students.
@@ -74,9 +74,10 @@ GateX offers the following features:
      pip install -r requirements.txt
      ```
 
-3. **Configure Firebase**:
-   - Set up Firebase for real-time database and storage.
-   - Update `configs/database.yaml` with your Firebase project details.
+3. **Configure Firebase & Cloudinary**:
+   - Set up Firebase for the real-time database.
+   - Sign up for [Cloudinary](https://cloudinary.com/) and obtain your **Cloud name**, **API key**, and **API secret**.
+   - Update `configs/database.yaml` with Firebase details and your Cloudinary credentials.
    - Place your Firebase service account key (JSON) at the path specified in the YAML file.
 
 4. **Download Face Landmark Model**:
@@ -198,6 +199,20 @@ datFile = os.path.join(os.path.dirname(__file__), 'shape_predictor_68_face_landm
 firebase:
   pathToServiceAccount: "configs/serviceAccountKey.json"
 ```
+
+---
+
+### 🖼️ Cloudinary Credentials Missing
+
+1. Create a free account at [Cloudinary](https://cloudinary.com/).
+2. Navigate to the **Dashboard** to find your *Cloud name*, *API key*, and *API secret*.
+3. Edit `configs/database.yaml` and fill in these values under the `cloudinary` section:
+   ```yaml
+   cloudinary:
+     cloud_name: "your_cloud_name"
+     api_key: "your_api_key"
+     api_secret: "your_api_secret"
+   ```
 
 ---
 
