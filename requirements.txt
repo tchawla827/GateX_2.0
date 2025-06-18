@@ -13,4 +13,5 @@ keras==2.13.1
 protobuf==3.20.3
 google-api-core==2.15.0
 cloudinary==1.44.1
+PyYAML==6.0.2
 
