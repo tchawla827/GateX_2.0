@@ -72,6 +72,8 @@ GateX offers the following features:
      ```bash
      pip install -r requirements.txt
      ```
+     The versions in `requirements.txt` are final. No additional monkey
+     patches are required.
 
 3. **Configure Firebase & Cloudinary**:
    - Set up Firebase for the real-time database.
@@ -148,7 +150,7 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 ## Technical Information
 
 
-- Python 3.10+
+- Python 3.11.0
 - TensorFlow 2.19.0
 - Flask 3.x
 - Firebase Admin SDK 6.x
