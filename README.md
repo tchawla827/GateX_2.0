@@ -91,6 +91,19 @@ GateX offers the following features:
    ```
    Access the app at `http://127.0.0.1:5000`.
 
+### Docker
+
+You can also run GateX inside a Docker container. Build the image and start the
+service using the commands below:
+
+```bash
+docker build -t gatex .
+docker run -p 5000:5000 gatex
+```
+
+The container exposes port `5000`. Mount or edit `configs/database.yaml` if you
+need to supply different credentials or a service account path.
+
 ---
 
 ## Usage
