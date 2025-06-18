@@ -104,6 +104,14 @@ docker run -p 5000:5000 gatex
 The container exposes port `5000`. Mount or edit `configs/database.yaml` if you
 need to supply different credentials or a service account path.
 
+The web interface now captures images directly from the client's browser using
+WebRTC, so no special flags are needed when running in Docker or on Render.
+If you prefer to provide the host webcam device to the container, run:
+
+```bash
+docker run --device=/dev/video0:/dev/video0 -p 5000:5000 gatex
+```
+
 ---
 
 ## Usage

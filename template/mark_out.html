@@ -159,7 +159,7 @@
         <div id="right-column">
             <button id="capture-button">Mark Out</button>
             <div class="video-container">
-                <iframe id="video" src="{{ url_for('video_feed') }}"></iframe>
+                <video id="video" autoplay></video>
             </div>
         </div>
     </div>
@@ -175,22 +175,36 @@
     </div>
 
     <script>
+        const videoElement = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            videoElement.srcObject = stream;
+        });
+
         document.getElementById('capture-button').addEventListener('click', function () {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ url_for("markout") }}', true);  // Corrected url_for usage
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    alert('Marked out successfully! Redirecting to home...');
-                    window.location.href = '{{ url_for("home") }}';  // Corrected url_for usage
-                } else {
-                    xhr.responseText && JSON.parse(xhr.responseText).message &&
-                        alert(JSON.parse(xhr.responseText).message);
-                }
-            };
-            xhr.onerror = function () {
-                alert('An error occurred while processing your request.');
-            };
-            xhr.send();
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            canvas.getContext('2d').drawImage(videoElement, 0, 0);
+            canvas.toBlob(function (blob) {
+                const formData = new FormData();
+                formData.append('file', blob, 'capture.jpg');
+                fetch('{{ url_for("markout") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Marked out successfully! Redirecting to home...');
+                            window.location.href = '{{ url_for("home") }}';
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(() => {
+                        alert('An error occurred while processing your request.');
+                    });
+            }, 'image/jpeg');
         });
     </script>
     

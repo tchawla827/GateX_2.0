@@ -15,6 +15,7 @@ from jinja2 import select_autoescape, FileSystemLoader
 
 import os
 import cv2
+import numpy as np
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
@@ -227,7 +228,13 @@ def video_feed():
 @app.route("/markin", methods=["POST"])
 def markin():
     global filename, detection
-    ret, frame = video.read()
+    uploaded = request.files.get("file")
+    if uploaded:
+        data = np.frombuffer(uploaded.read(), np.uint8)
+        frame = cv2.imdecode(data, cv2.IMREAD_COLOR)
+        ret = frame is not None
+    else:
+        ret, frame = video.read()
 
     if ret:
         out_students_ref = db.reference("Out Students")
@@ -303,7 +310,13 @@ def markin():
 @app.route("/markout", methods=["POST"])
 def markout():
     global filename, detection
-    ret, frame = video.read()
+    uploaded = request.files.get("file")
+    if uploaded:
+        data = np.frombuffer(uploaded.read(), np.uint8)
+        frame = cv2.imdecode(data, cv2.IMREAD_COLOR)
+        ret = frame is not None
+    else:
+        ret, frame = video.read()
 
     if ret:
         ref = db.reference("Students")
