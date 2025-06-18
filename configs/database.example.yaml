@@ -1,0 +1,9 @@
+teacher:
+  password_hash: YOUR_HASH_HERE
+firebase:
+  databaseURL: YOUR_DATABASE_URL
+  pathToServiceAccount: path/to/serviceAccount.json
+cloudinary:
+  cloud_name: YOUR_CLOUD_NAME
+  api_key: YOUR_API_KEY
+  api_secret: YOUR_API_SECRET

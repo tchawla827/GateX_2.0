@@ -13,6 +13,7 @@ This project, built with Python, Flask, OpenCV, and Firebase, streamlines gate m
 - [Screenshots](#screenshots)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Deployment on Render](#deployment-on-render)
 - [Dependencies](#dependencies)
 - [Future Improvements](#future-improvements)
 - [Contribution](#contribution)
@@ -78,8 +79,8 @@ GateX offers the following features:
 3. **Configure Firebase & Cloudinary**:
    - Set up Firebase for the real-time database.
    - Sign up for [Cloudinary](https://cloudinary.com/) and obtain your **Cloud name**, **API key**, and **API secret**.
-   - Update `configs/database.yaml` with Firebase details and your Cloudinary credentials.
-   - Place your Firebase service account key (JSON) at the path specified in the YAML file.
+  - Copy `configs/database.example.yaml` to `configs/database.yaml` and update it with your Firebase and Cloudinary credentials.
+  - Place your Firebase service account key (JSON) at the path specified in the YAML file or use the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
 4. **Download Face Landmark Model**:
    - Download: [shape_predictor_68_face_landmarks.dat.bz2](https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2)
@@ -102,6 +103,22 @@ GateX offers the following features:
 ### Admins
 - Approve or reject outpass requests.
 - Monitor current out status and view history.
+
+---
+
+## Deployment on Render
+
+1. Ensure all project dependencies are installed with `pip install -r requirements.txt`.
+2. Copy `configs/database.example.yaml` to `configs/database.yaml` and fill in your credentials.
+3. Upload `shape_predictor_68_face_landmarks.dat` to the `detection/` folder.
+4. Commit your code to a Git repository and connect it to [Render](https://render.com).
+5. On Render, create a new **Web Service** and set the following:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+   - Add environment variables for `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`,
+     `CLOUDINARY_API_SECRET`, `GOOGLE_APPLICATION_CREDENTIALS`,
+     `FIREBASE_DATABASE_URL`, `TEACHER_PASSWORD_HASH`, and optionally `CONFIG_PATH`.
+6. Deploy the service. Render will automatically build and start the Flask app.
 
 ---
 

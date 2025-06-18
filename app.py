@@ -29,22 +29,36 @@ from utils.configuration import load_yaml
 from jinja2 import Environment, select_autoescape
 
 
-config_file_path = load_yaml("configs/database.yaml")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "configs/database.yaml")
+config_file_path = load_yaml(CONFIG_PATH)
 
-TEACHER_PASSWORD_HASH = config_file_path["teacher"]["password_hash"]
+TEACHER_PASSWORD_HASH = os.getenv(
+    "TEACHER_PASSWORD_HASH", config_file_path["teacher"]["password_hash"]
+)
 
-cred = credentials.Certificate(config_file_path["firebase"]["pathToServiceAccount"])
+cred_path = os.getenv(
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    config_file_path["firebase"]["pathToServiceAccount"],
+)
+database_url = os.getenv(
+    "FIREBASE_DATABASE_URL", config_file_path["firebase"]["databaseURL"]
+)
+cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(
     cred,
     {
-        "databaseURL": config_file_path["firebase"]["databaseURL"],
+        "databaseURL": database_url,
     },
 )
 
 cloudinary.config(
-    cloud_name=config_file_path["cloudinary"]["cloud_name"],
-    api_key=config_file_path["cloudinary"]["api_key"],
-    api_secret=config_file_path["cloudinary"]["api_secret"],
+    cloud_name=os.getenv(
+        "CLOUDINARY_CLOUD_NAME", config_file_path["cloudinary"]["cloud_name"]
+    ),
+    api_key=os.getenv("CLOUDINARY_API_KEY", config_file_path["cloudinary"]["api_key"]),
+    api_secret=os.getenv(
+        "CLOUDINARY_API_SECRET", config_file_path["cloudinary"]["api_secret"]
+    ),
 )
 
 
@@ -777,4 +791,5 @@ def view_history():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
