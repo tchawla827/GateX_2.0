@@ -36,6 +36,9 @@
 
 <body>
 
+  <video id="localVideo" autoplay muted playsinline
+         style="max-width:100%; border-radius:8px"></video>
+
   <div class="hero_area">
 
     <div class="hero_bg_box">
@@ -759,6 +762,32 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
   </script>
   <!-- End Google Map -->
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+          integrity="sha384-..." crossorigin="anonymous"></script>
+  <script>
+  const video  = document.getElementById('localVideo');
+  const canvas = document.createElement('canvas');
+  const FPS    = 10;
+  const socket = io();
+
+  navigator.mediaDevices.getUserMedia({video: true})
+    .then(stream => video.srcObject = stream)
+    .catch(err   => alert("Camera permission denied: " + err));
+
+  setInterval(() => {
+    if (!video.videoWidth) return;
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    canvas.toBlob(blob => socket.emit('frame', blob), 'image/jpeg', 0.6);
+  }, 1000 / FPS);
+
+  socket.on('annotated', bytes => {
+    const url = URL.createObjectURL(new Blob([bytes]));
+    video.src = url;
+  });
+  </script>
 
 </body>
 

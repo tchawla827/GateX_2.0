@@ -8,7 +8,9 @@ import os
 from scipy.spatial.distance import cosine
 
 # Path to the shape predictor file
-datFile = os.path.join(os.path.dirname(__file__), "shape_predictor_68_face_landmarks.dat")
+datFile = os.path.join(
+    os.path.dirname(__file__), "shape_predictor_68_face_landmarks.dat"
+)
 
 # Load the cascade
 face_cascade = cv2.CascadeClassifier(
@@ -24,19 +26,19 @@ predictor = dlib.shape_predictor(datFile)
 
 
 def detect_faces(img):
-    '''The function `detect_faces` takes an image as input, converts it
+    """The function `detect_faces` takes an image as input, converts it
     to grayscale, detects faces using a cascade classifier, and returns
     a list of coordinates representing the detected faces.
-    
+
     Parameters
     ----------
     img
         The input image on which you want to detect faces.
-    
+
     Returns
     -------
         a list of faces detected in the image.
-    '''
+    """
     # Convert the image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Display the frame
@@ -51,9 +53,9 @@ def detect_faces(img):
 
 
 def align_face(img, face):
-    '''The `align_face` function takes an image and a bounding box of a face as input, and aligns the face
+    """The `align_face` function takes an image and a bounding box of a face as input, and aligns the face
     in the image based on the position of the eyes.
-    
+
     Parameters
     ----------
     img
@@ -61,12 +63,12 @@ def align_face(img, face):
     face
         The "face" parameter is a list containing the coordinates and dimensions of the detected face in
     the image. It should have the format [x, y, width, height], where:
-    
+
     Returns
     -------
         the aligned face image.
-    
-    '''
+
+    """
     # Convert the image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -150,20 +152,20 @@ def align_face(img, face):
 
 
 def extract_features(face):
-    '''The function "extract_features" takes a face image as input, converts it to RGB color format, and
+    """The function "extract_features" takes a face image as input, converts it to RGB color format, and
     uses the DeepFace model to predict the embedding of the face.
-    
+
     Parameters
     ----------
     face
         The "face" parameter is an image of a face that you want to extract features from. It is expected
     to be in BGR color format, which is the default color format used by OpenCV.
-    
+
     Returns
     -------
         the embedding of the face, which is a numerical representation of the face's features.
 
-    '''
+    """
     # Convert the face to RGB color format
     face_rgb = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
 
@@ -174,10 +176,10 @@ def extract_features(face):
 
 
 def match_face(embedding, database):
-    '''The function `match_face` takes an input face embedding and a database of face embeddings, and
+    """The function `match_face` takes an input face embedding and a database of face embeddings, and
     returns the name of the closest matching face in the database if the distance is below a certain
     threshold, otherwise it returns None.
-    
+
     Parameters
     ----------
     embedding
@@ -186,13 +188,13 @@ def match_face(embedding, database):
     database
         The database parameter is a dictionary that contains the embeddings of known faces. The keys of the
     dictionary are the names of the individuals and the values are the corresponding embeddings.
-    
+
     Returns
     -------
         the name of the closest match in the database if the minimum distance is less than 0.50. Otherwise,
     it returns None.
-    
-    '''
+
+    """
     min_distance = 100  # Initialize min_distance with a large number
     match = None  # Initialize match with None
 
@@ -213,3 +215,8 @@ def match_face(embedding, database):
         return match
     else:
         return None
+
+
+def recognize_faces(frame):
+    """Placeholder recognition returning the input frame."""
+    return frame

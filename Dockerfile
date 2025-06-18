@@ -28,5 +28,9 @@ EXPOSE 5000
 ENV FLASK_APP=app.py
 ENV PYTHONUNBUFFERED=1
 
+# physical webcam support under Docker Desktop/WSL2
+RUN apt-get update && apt-get install -y libgl1 libglib2.0-0 v4l-utils
+ENV OPENCV_VIDEOIO_PRIORITY_MSMF=0
+
 # Run the application
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]

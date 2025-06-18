@@ -179,3 +179,16 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 **Tavish Chawla**  
 📧 [tchawla827@gmail.com](mailto:tchawla827@gmail.com)  
 🔗 [LinkedIn](https://www.linkedin.com/in/tavish-chawla-3b1673278/)
+
+### Local USB cam (Windows + Docker Desktop)
+
+```powershell
+docker run -p 5000:5000 `
+           --device /dev/video0:/dev/video0 `
+           --shm-size=1g `
+           -e CAPTURE_MODE=local `
+           tchawla827/gatex:latest
+```
+
+Cloud (Render etc.)
+Set env CAPTURE_MODE=browser (default) – no extra flags.

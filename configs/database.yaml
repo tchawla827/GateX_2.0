@@ -7,3 +7,4 @@ cloudinary:
   cloud_name: "dduk4nh1y"
   api_key: "286227615131697"
   api_secret: "uxMiZUPWksh5lYO8b6rUZAtLzL4"
+CAPTURE_MODE: browser

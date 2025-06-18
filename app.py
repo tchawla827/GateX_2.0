@@ -14,6 +14,8 @@ from werkzeug.utils import secure_filename
 from jinja2 import select_autoescape, FileSystemLoader
 
 import os
+from flask_socketio import SocketIO
+import numpy as np
 import cv2
 from datetime import datetime
 import firebase_admin
@@ -108,7 +110,7 @@ def match_with_database(img, database):
 
 
 app = Flask(__name__, template_folder="template", static_folder="static")
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
@@ -127,11 +129,13 @@ def login():
         "student_login.html", get_flashed_messages=get_flashed_messages
     )
 
+
 @app.route("/logout")
 def logout():
     return render_template(
         "student_login.html", get_flashed_messages=get_flashed_messages
     )
+
 
 @app.route("/home")
 def home():
@@ -140,7 +144,9 @@ def home():
 
 @app.route("/try")
 def test():
-    return render_template("try.html")  # Create a basic test.html template to test url_for
+    return render_template(
+        "try.html"
+    )  # Create a basic test.html template to test url_for
 
 
 @app.route("/add_info")
@@ -154,7 +160,9 @@ def teacher_login():
         teacher_name = request.form.get("teacher_name")
         password = request.form.get("password")
 
-        if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
+        if teacher_name == "admin" and check_password_hash(
+            TEACHER_PASSWORD_HASH, password
+        ):
             return redirect(url_for("home"))
         else:
             flash("Incorrect credentials")
@@ -223,7 +231,6 @@ def video_feed():
     return Response(gen_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
-
 @app.route("/markin", methods=["POST"])
 def markin():
     global filename, detection
@@ -262,22 +269,34 @@ def markin():
             if out_students_ref.child(student_name).get() is not None:
                 # Remove the student from 'Out Students' (they are marked in now)
                 out_students_ref.child(student_name).delete()
-                print(f"{student_name} has been marked in and removed from 'Out Students'.")
+                print(
+                    f"{student_name} has been marked in and removed from 'Out Students'."
+                )
 
                 # Update the history with time_in information
                 history_ref = db.reference("History")
-                history_entries = history_ref.order_by_child("name").equal_to(student_name).get()
+                history_entries = (
+                    history_ref.order_by_child("name").equal_to(student_name).get()
+                )
 
                 if history_entries:
                     # Convert to a list and find the latest entry
                     entries = list(history_entries.values())
-                    latest_entry = max(entries, key=lambda x: x["time_out"])  # Find the latest entry
+                    latest_entry = max(
+                        entries, key=lambda x: x["time_out"]
+                    )  # Find the latest entry
 
                     # Get the key of the latest entry
-                    latest_entry_key = next(key for key, value in history_entries.items() if value == latest_entry)
+                    latest_entry_key = next(
+                        key
+                        for key, value in history_entries.items()
+                        if value == latest_entry
+                    )
 
                     # Update the time_in for the latest entry
-                    history_ref.child(latest_entry_key).update({"time_in": str(datetime.now())})
+                    history_ref.child(latest_entry_key).update(
+                        {"time_in": str(datetime.now())}
+                    )
                     print(f"Updated history for {student_name} with time_in.")
 
                 return {
@@ -296,8 +315,6 @@ def markin():
 
     print("Error capturing image.")
     return {"status": "error", "message": "Error capturing image"}, 500
-
-
 
 
 @app.route("/markout", methods=["POST"])
@@ -351,16 +368,24 @@ def markout():
                     if studentInfo and studentInfo["name"] == student_name:
                         rollNumber = studentInfo.get("rollNumber", "Not Provided")
                         student_class = studentInfo.get("classes", "Not Provided")
-                        phoneNumber = studentInfo.get("phone", "Not Provided")  # Get phone number
-                        print(f"Found rollNumber: {rollNumber}, class: {student_class}, phone: {phoneNumber}")
+                        phoneNumber = studentInfo.get(
+                            "phone", "Not Provided"
+                        )  # Get phone number
+                        print(
+                            f"Found rollNumber: {rollNumber}, class: {student_class}, phone: {phoneNumber}"
+                        )
                         break
             elif isinstance(students_data, list):
                 for studentInfo in students_data:
                     if studentInfo and studentInfo["name"] == student_name:
                         rollNumber = studentInfo.get("rollNumber", "Not Provided")
                         student_class = studentInfo.get("classes", "Not Provided")
-                        phoneNumber = studentInfo.get("phone", "Not Provided")  # Get phone number
-                        print(f"Found rollNumber: {rollNumber}, class: {student_class}, phone: {phoneNumber}")
+                        phoneNumber = studentInfo.get(
+                            "phone", "Not Provided"
+                        )  # Get phone number
+                        print(
+                            f"Found rollNumber: {rollNumber}, class: {student_class}, phone: {phoneNumber}"
+                        )
                         break
 
             if rollNumber == "Not Provided" or student_class == "Not Provided":
@@ -456,9 +481,6 @@ def markout():
 
     print("Error capturing image.")
     return {"status": "error", "message": "Error capturing image"}, 500
-
-
-
 
 
 @app.route("/capture", methods=["POST"])
@@ -731,15 +753,17 @@ def admin_review():
             value["id"] = key
             # Convert outgoing_date to a datetime object for sorting, if present
             if "outgoing_date" in value:
-                value["outgoing_datetime"] = datetime.strptime(value["outgoing_date"], "%Y-%m-%d")
+                value["outgoing_datetime"] = datetime.strptime(
+                    value["outgoing_date"], "%Y-%m-%d"
+                )
             else:
-                value["outgoing_datetime"] = datetime.max  # Use a max date if not present
+                value["outgoing_datetime"] = (
+                    datetime.max
+                )  # Use a max date if not present
             request_list.append(value)
 
     # Sort by status ('Pending' first) and then by outgoing date (earliest date first)
-    request_list.sort(
-        key=lambda x: (x["status"] != "Pending", x["outgoing_datetime"])
-    )
+    request_list.sort(key=lambda x: (x["status"] != "Pending", x["outgoing_datetime"]))
 
     # Remove the temporary outgoing_datetime key after sorting
     for request in request_list:
@@ -775,6 +799,22 @@ def view_history():
     return render_template("view_history.html", history=history_data)
 
 
+@socketio.on("frame")
+def handle_frame(raw):
+    """Receive binary JPEG frame from browser, run recognition, send back."""
+    img = np.frombuffer(raw, dtype=np.uint8)
+    frame = cv2.imdecode(img, cv2.IMREAD_COLOR)
+    # ---- existing face-recognition pipeline here ----
+    from detection.face_matching import recognize_faces
+
+    annotated = recognize_faces(frame)
+    _, jpeg = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 60])
+    socketio.emit("annotated", jpeg.tobytes())
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    mode = os.getenv("CAPTURE_MODE", "browser")
+    if mode == "local":
+        app.run(host="0.0.0.0", port=5000)
+    else:
+        socketio.run(app, host="0.0.0.0", port=5000)
