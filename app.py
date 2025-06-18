@@ -11,6 +11,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
+import numpy as np
+from flask_cors import CORS
 from jinja2 import select_autoescape, FileSystemLoader
 
 import os
@@ -20,10 +22,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-from detection.face_matching import detect_faces, align_face
-from detection.face_matching import extract_features, match_face
+from detection.face_matching import detect_faces, align_face, extract_features, match_face, identify_face
 from utils.configuration import load_yaml
 
 from jinja2 import Environment, select_autoescape
@@ -109,6 +108,7 @@ def match_with_database(img, database):
 
 app = Flask(__name__, template_folder="template", static_folder="static")
 
+CORS(app)
 
 app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
@@ -773,6 +773,27 @@ def view_history():
         history_data = {}  # Initialize as an empty dictionary if no history
 
     return render_template("view_history.html", history=history_data)
+@app.post("/api/frame")
+def api_frame():
+    data = request.data
+    if not data:
+        return jsonify({"error": "no image"}), 400
+    frame = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+    students_data = db.reference("Students").get()
+    database = {}
+    if isinstance(students_data, dict):
+        iterable = students_data.values()
+    else:
+        iterable = students_data or []
+    for info in iterable:
+        if info:
+            name = info.get("name")
+            emb = info.get("embeddings")
+            if name and emb:
+                database[name] = emb
+    name, prob = identify_face(frame, database)
+    return jsonify({"name": name, "probability": prob})
+
 
 
 

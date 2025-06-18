@@ -213,3 +213,32 @@ def match_face(embedding, database):
         return match
     else:
         return None
+
+def identify_face(img, database):
+    """Detect and match the largest face in `img` against `database`.
+
+    Parameters
+    ----------
+    img : ndarray
+        BGR image to process.
+    database : dict
+        Mapping of names to embeddings.
+
+    Returns
+    -------
+    tuple
+        (name, probability) if a match is found, otherwise (None, 0.0).
+    """
+    faces = detect_faces(img)
+    for face in faces:
+        try:
+            aligned = align_face(img, face)
+            embedding = extract_features(aligned)[0]["embedding"]
+            match = match_face(embedding, database)
+            if match:
+                prob = 1 - cosine(embedding, database[match])
+                return match, float(prob)
+        except Exception:
+            continue
+    return None, 0.0
+
