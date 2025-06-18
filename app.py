@@ -1,5 +1,14 @@
-from flask import Flask, render_template, get_flashed_messages
-from flask import request, redirect, url_for, Response, flash, jsonify
+from flask import (
+    Flask,
+    render_template,
+    get_flashed_messages,
+    request,
+    redirect,
+    url_for,
+    Response,
+    flash,
+    jsonify,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from jinja2 import select_autoescape, FileSystemLoader
@@ -17,7 +26,6 @@ from detection.face_matching import detect_faces, align_face
 from detection.face_matching import extract_features, match_face
 from utils.configuration import load_yaml
 
-from flask import Flask, render_template_string
 from jinja2 import Environment, select_autoescape
 
 
@@ -138,17 +146,6 @@ def test():
 @app.route("/add_info")
 def add_info():
     return render_template("add_info.html")
-
-
-from flask import (
-    Flask,
-    redirect,
-    url_for,
-    flash,
-    request,
-    render_template,
-    get_flashed_messages,
-)
 
 
 @app.route("/teacher_login", methods=["GET", "POST"])
