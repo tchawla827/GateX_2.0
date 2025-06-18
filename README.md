@@ -107,7 +107,9 @@ GateX offers the following features:
 
 The key dependencies include:
 
+
 - **Flask** 3.x
+
 - **OpenCV**
 - **Firebase Admin SDK** 6.x
 - **Werkzeug**
@@ -145,6 +147,7 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 
 ## Technical Information
 
+
 - Python 3.10+
 - TensorFlow 2.19.0
 - Flask 3.x
@@ -152,6 +155,7 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 - DeepFace 0.0.93
 - OpenCV 4.11.0.86
 - Dlib 20.0.0
+
 
 ---
 
