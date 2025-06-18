@@ -108,7 +108,7 @@ GateX offers the following features:
 
 The key dependencies include:
 
-- **Flask** (1.1.2)
+- **Flask** (3.1.1)
 - **OpenCV**
 - **Firebase Admin SDK**
 - **Werkzeug**
@@ -234,13 +234,13 @@ pip install PyYAML
 
 ## Technical Information
 
-- Python 3.8.0
-- TensorFlow 2.13.0
-- Flask 1.1.2
-- Firebase Admin SDK 4.0.0
-- DeepFace 0.0.79
-- OpenCV 4.8.0.74
-- Dlib 19.21.1
+- Python 3.11
+- TensorFlow 2.19.0
+- Flask 3.1.1
+- Firebase Admin SDK 6.9.0
+- DeepFace 0.0.93
+- OpenCV 4.11.0.86
+- Dlib 19.24.0
 
 ---
 
