@@ -2,7 +2,6 @@ from flask import Flask, render_template, get_flashed_messages
 from flask import request, redirect, url_for, Response, flash, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-from markupsafe import escape
 from jinja2 import select_autoescape, FileSystemLoader
 
 import os
