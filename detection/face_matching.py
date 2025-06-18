@@ -2,12 +2,13 @@ import cv2
 import dlib
 import numpy as np
 from deepface import DeepFace
+import os
 
 # import tensorflow as tf
 from scipy.spatial.distance import cosine
 
 # Path to the shape predictor file
-datFile = r"detection\shape_predictor_68_face_landmarks.dat"
+datFile = os.path.join(os.path.dirname(__file__), "shape_predictor_68_face_landmarks.dat")
 
 # Load the cascade
 face_cascade = cv2.CascadeClassifier(
