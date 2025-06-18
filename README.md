@@ -91,6 +91,14 @@ GateX offers the following features:
    ```
    Access the app at `http://127.0.0.1:5000`.
 
+6. **Run with Docker (optional)**:
+   Build the image and start a container:
+   ```bash
+   docker build -t gatex .
+   docker run -p 5000:5000 gatex
+   ```
+   Access the app at `http://localhost:5000`.
+
 ---
 
 ## Usage
