@@ -45,6 +45,9 @@ cred_json = os.environ.get(
     config_file_path["firebase"].get("serviceAccountJson"),
 )
 cred_info = json.loads(cred_json or "{}")
+# Support service account JSON with escaped newlines in the private key
+if "private_key" in cred_info:
+    cred_info["private_key"] = cred_info["private_key"].replace("\\n", "\n")
 cred = credentials.Certificate(cred_info)
 firebase_admin.initialize_app(
     cred,
