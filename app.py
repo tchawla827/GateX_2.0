@@ -528,6 +528,15 @@ def success(filename):
 
 @app.route("/submit_info", methods=["POST"])
 def submit_info():
+    global filename
+
+    if "filename" not in globals():
+        flash("Please capture a face image before submitting your information.")
+        return redirect(url_for("register"))
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    if not os.path.exists(file_path):
+        flash("Image not found. Please capture or upload again.")
+        return redirect(url_for("register"))
 
     name = request.form.get("name")
     rollNumber = request.form.get("rollNumber")
@@ -539,8 +548,7 @@ def submit_info():
     hashed_password = generate_password_hash(password)
 
     studentId, _ = os.path.splitext(filename)
-    fileName = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    data = cv2.imread(fileName)
+    data = cv2.imread(file_path)
 
     faces = detect_faces(data)
 
