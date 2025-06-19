@@ -10,3 +10,9 @@ gatex-2-firebase-adminsdk-fbsvc-40934da302.json
 gatex-2-firebase-adminsdk-fbsvc-40934da302.json
 *.zip
 # .env
+
+static/images
+static/recognized
+examples/
+docs/
+mkcert-v1.4.4-windows-amd64.exe

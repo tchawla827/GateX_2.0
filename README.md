@@ -1,3 +1,10 @@
+title: GateX
+emoji: 📊
+colorFrom: indigo
+colorTo: pink
+sdk: docker
+pinned: false
+
 # GateX Gate Outpass Management System
 
 **GateX** is a facial recognition-based Gate Outpass Management System tailored for college campuses. Students can request outpasses, mark their departure and return using a facial recognition system, and track their request history. Admins manage approvals, view the status of currently out students, and access historical records.
@@ -200,3 +207,5 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 **Tavish Chawla**  
 📧 [tchawla827@gmail.com](mailto:tchawla827@gmail.com)  
 🔗 [LinkedIn](https://www.linkedin.com/in/tavish-chawla-3b1673278/)
+
+
