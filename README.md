@@ -89,26 +89,26 @@ GateX offers the following features:
 5. **Generate a Self-Signed Certificate**:
    - Install [`mkcert`](https://github.com/FiloSottile/mkcert) and run:
      ```bash
-     mkcert 192.168.0.102
+     mkcert <your-host>
      ```
-     This creates `192.168.0.102.pem` and `192.168.0.102-key.pem` in the current directory.
-   - Rename or copy them to `cert.pem` and `key.pem` in the project root. Alternatively, use OpenSSL:
+     Replace `<your-host>` with the domain or IP you plan to use. This creates
+     `<your-host>.pem` and `<your-host>-key.pem` in the current directory.
+   - Rename or copy them to `cert.pem` and `key.pem` in the project root.
+     Alternatively, use OpenSSL:
      ```bash
      openssl req -newkey rsa:2048 -nodes -x509 -days 365 \
-       -subj "/CN=192.168.0.102" \
+       -subj "/CN=<your-host>" \
        -keyout key.pem -out cert.pem
      ```
 
 6. **Run the Application**:
    ```bash
-   python app.py
+   gunicorn -k eventlet -w 1 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app
    ```
-   Access the app at `https://192.168.0.102:5000` from any device on the LAN.
-   - To share over the internet, install [ngrok](https://ngrok.com/) and run:
-     ```bash
-     ngrok http https://192.168.0.102:5000
-     ```
-     Ngrok will provide a public HTTPS URL forwarding to your local server.
+   Set the `HOST` and `PORT` environment variables to control where the server
+   binds. When deploying publicly, run behind an HTTPS termination proxy (such
+   as Nginx or Caddy) and forward requests to the Gunicorn instance.
+   These variables can also be stored in a `.env` file for convenience.
 
 ---
 
@@ -117,10 +117,15 @@ GateX offers the following features:
 To build and run GateX using Docker:
 ```bash
 docker build -t gatex .
-docker run -p 5000:5000 gatex
+docker run -p 5000:5000 \
+  -e PORT=5000 -e HOST=0.0.0.0 gatex
 ```
 The container now starts the application with **Gunicorn** using the
 `eventlet` worker so WebSocket communication works out of the box.
+
+You can also customise these options via the provided `docker-compose.yml`
+or by creating a `.env` file (see `.env.example`) with your preferred `HOST`
+and `PORT` values.
 
 ## Usage
 
