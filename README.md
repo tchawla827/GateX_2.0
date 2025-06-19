@@ -77,10 +77,17 @@ GateX offers the following features:
    ```
 
 2. **Set Up Environment**:
-   - Create and activate a virtual environment.
-   - Install dependencies:
+   - Ensure Python 3.11 is installed.
+   - Create and activate a virtual environment:
      ```bash
-     pip install -r requirements.txt
+     python3 -m venv .venv
+     source .venv/bin/activate
+     ```
+   - Install dependencies using the provided wheelhouse so `dlib` does not
+     need to compile:
+     ```bash
+     pip install --upgrade pip
+     pip install --find-links wheelhouse -r requirements.txt
      ```
      The versions in `requirements.txt` are final. No additional monkey
      patches are required.
@@ -96,7 +103,21 @@ GateX offers the following features:
    - Download: [shape_predictor_68_face_landmarks.dat.bz2](https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2)
    - Extract and place `shape_predictor_68_face_landmarks.dat` in the `detection/` folder.
 
-5. **Generate a Self-Signed Certificate**:
+5. **DeepFace Weights from Hugging Face**:
+   - On first run, DeepFace downloads the FaceNet weights from the
+     [Hugging Face Hub](https://huggingface.co/).  The files are cached in the
+     directory referenced by the `DEEPFACE_HOME` environment variable
+     (defaults to `~/.deepface`).
+   - To avoid network access at runtime you may pre-download the weights with:
+     ```bash
+     python - <<'EOF'
+     from deepface.basemodels import Facenet
+     Facenet.loadModel()
+     EOF
+     ```
+    The weights will be stored in the cache directory for future runs.
+
+6. **Generate a Self-Signed Certificate**:
    - Install [`mkcert`](https://github.com/FiloSottile/mkcert) and run:
      ```bash
      mkcert <your-host>
@@ -111,7 +132,7 @@ GateX offers the following features:
        -keyout key.pem -out cert.pem
      ```
 
-6. **Run the Application**:
+7. **Run the Application**:
    ```bash
    gunicorn -k eventlet -w 1 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app
    ```
@@ -207,14 +228,6 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 
 ## Author
 
-**Tavish Chawla**  
-📧 [tchawla827@gmail.com](mailto:tchawla827@gmail.com)  
+**Tavish Chawla**
+📧 [tchawla827@gmail.com](mailto:tchawla827@gmail.com)
 🔗 [LinkedIn](https://www.linkedin.com/in/tavish-chawla-3b1673278/)
-
-
-title: GateX
-emoji: 📊
-colorFrom: indigo
-colorTo: pink
-sdk: docker
-pinned: false
