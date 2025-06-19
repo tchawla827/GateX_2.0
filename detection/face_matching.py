@@ -2,6 +2,7 @@ import cv2
 import dlib
 import numpy as np
 from deepface import DeepFace
+import threading
 import os
 
 # import tensorflow as tf
@@ -18,6 +19,10 @@ face_cascade = cv2.CascadeClassifier(
 # Load the detector and predictor
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(datFile)
+
+# Build Facenet-128D once, at import time
+_FACENET_MODEL = DeepFace.build_model("Facenet")
+_FACENET_LOCK = threading.Lock()          # TensorFlow is not thread-safe
 
 # # Load the model
 # model = tf.keras.applications.ResNet50(weights='imagenet')
@@ -149,28 +154,18 @@ def align_face(img, face):
 #     return yhat[0]
 
 
-def extract_features(face):
-    '''The function "extract_features" takes a face image as input, converts it to RGB color format, and
-    uses the DeepFace model to predict the embedding of the face.
-    
-    Parameters
-    ----------
-    face
-        The "face" parameter is an image of a face that you want to extract features from. It is expected
-    to be in BGR color format, which is the default color format used by OpenCV.
-    
-    Returns
-    -------
-        the embedding of the face, which is a numerical representation of the face's features.
-
-    '''
-    # Convert the face to RGB color format
-    face_rgb = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-
-    # Use the DeepFace model to predict the embedding
-    embedding = DeepFace.represent(face_rgb, model_name="Facenet")
-
-    return embedding
+def extract_features(bgr_img):
+    """Return a list with one dict: {'embedding': 128-D numpy array}
+    `bgr_img` is an already-aligned face as a NumPy BGR image.
+    """
+    with _FACENET_LOCK:
+        rep = DeepFace.represent(
+            img_path=bgr_img,          # ndarray supported – no temp file
+            model=_FACENET_MODEL,
+            detector_backend="skip",   # we already detected/aligned
+            enforce_detection=False
+        )
+    return rep
 
 
 def match_face(embedding, database):

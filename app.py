@@ -56,7 +56,7 @@ app.jinja_env = Environment(
 )
 app.jinja_env.globals.update(url_for=url_for)
 app.secret_key = "123456"
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
 
 UPLOAD_FOLDER = "static/images"
