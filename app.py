@@ -544,7 +544,7 @@ def submit_info():
 
     faces = detect_faces(data)
 
-    if not faces:
+    if faces is None or len(faces) == 0:
         flash("No face detected. Please try again.")
         return redirect(url_for("add_info"))
 
