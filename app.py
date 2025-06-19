@@ -826,10 +826,9 @@ def view_history():
 
 
 if __name__ == "__main__":
-    # Run with HTTPS so the webcam can be accessed on non-localhost origins
     socketio.run(
         app,
         host="0.0.0.0",
-        port=int(os.getenv("PORT", 5000)),
-        ssl_context=("cert.pem", "key.pem"),
+        port=int(os.environ.get("PORT", 10000)),
+        debug=False
     )
