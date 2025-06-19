@@ -529,32 +529,34 @@ def success(filename):
 @app.route("/submit_info", methods=["POST"])
 def submit_info():
     global filename
+    try:
+        if "filename" not in globals():
+            flash("Please capture a face image before submitting your information.")
+            return redirect(url_for("register"))
 
-    if "filename" not in globals():
-        flash("Please capture a face image before submitting your information.")
-        return redirect(url_for("register"))
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    if not os.path.exists(file_path):
-        flash("Image not found. Please capture or upload again.")
-        return redirect(url_for("register"))
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        if not os.path.exists(file_path):
+            flash("Image not found. Please capture or upload again.")
+            return redirect(url_for("register"))
 
-    name = request.form.get("name")
-    rollNumber = request.form.get("rollNumber")
-    email = request.form.get("email")
-    phone = request.form.get("phone")
-    userType = request.form.get("userType")
-    hostel = request.form.get("classes")
-    password = request.form.get("password")
-    hashed_password = generate_password_hash(password)
+        name = request.form.get("name")
+        rollNumber = request.form.get("rollNumber")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        userType = request.form.get("userType")
+        hostel = request.form.get("classes")
+        password = request.form.get("password")
+        hashed_password = generate_password_hash(password)
 
-    studentId, _ = os.path.splitext(filename)
-    data = cv2.imread(file_path)
+        studentId, _ = os.path.splitext(filename)
+        data = cv2.imread(file_path)
 
-    faces = detect_faces(data)
+        faces = detect_faces(data)
 
-    if faces is None or len(faces) == 0:
-        flash("No face detected. Please try again.")
-        return redirect(url_for("add_info"))
+        if faces is None or len(faces) == 0:
+            flash("No face detected. Please try again.")
+            return redirect(url_for("add_info"))
+
 
     embedding = None
     for face in faces:
@@ -571,24 +573,30 @@ def submit_info():
         flash("Failed to extract facial features. Please try again.")
         return redirect(url_for("add_info"))
 
-    ref = db.reference("Students")
-    student_data = {
-        str(studentId): {
-            "name": name,
-            "rollNumber": rollNumber,
-            "email": email,
-            "phone": phone,
-            "userType": userType,
-            "classes": hostel,
-            "password": hashed_password,
-            "embeddings": embedding[0]["embedding"],
+
+        ref = db.reference("Students")
+        student_data = {
+            str(studentId): {
+                "name": name,
+                "rollNumber": rollNumber,
+                "email": email,
+                "phone": phone,
+                "userType": userType,
+                "classes": hostel,
+                "password": hashed_password,
+                "embeddings": embedding[0]["embedding"],
+            }
         }
-    }
 
-    for key, value in student_data.items():
-        ref.child(key).set(value)
+        for key, value in student_data.items():
+            ref.child(key).set(value)
 
-    return redirect(url_for("success", filename=filename))
+        return redirect(url_for("success", filename=filename))
+
+    except Exception as e:
+        app.logger.exception("Error while submitting info: %s", e)
+        flash("An unexpected error occurred while submitting your information.")
+        return redirect(url_for("register"))
 
 
 @app.route("/recognize", methods=["GET", "POST"])
