@@ -12,6 +12,7 @@ This project, built with Python, Flask, OpenCV, and Firebase, streamlines gate m
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Installation](#installation)
+- [Docker](#docker)
 - [Usage](#usage)
 - [Dependencies](#dependencies)
 - [Future Improvements](#future-improvements)
@@ -111,6 +112,14 @@ GateX offers the following features:
 
 ---
 
+## Docker
+
+To build and run GateX using Docker:
+```bash
+docker build -t gatex .
+docker run -p 5000:5000 gatex
+```
+
 ## Usage
 
 ### Students
@@ -141,7 +150,7 @@ Install all dependencies using:
 
 ```bash
 pip install -r requirements.txt
-```
+   ```
 
 ---
 
