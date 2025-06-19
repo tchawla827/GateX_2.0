@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.git*
+*.md
+venv/
+myenv/
+examples/
+*.exe
+*.dat
+*.json
