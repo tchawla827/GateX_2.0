@@ -1,210 +1,152 @@
+"""
+detection/face_matching.py
+==========================
+
+• Detects and affine-aligns faces
+• Extracts 128-D embeddings with DeepFace Facenet
+• Works with every DeepFace release (≤0.0.45, 0.0.46-0.0.92, ≥0.0.93)
+• Thread-safe (global TensorFlow lock)
+"""
+
+from __future__ import annotations
+
+import os
 import cv2
 import dlib
 import numpy as np
-from deepface import DeepFace
 import threading
-import os
-
-# import tensorflow as tf
+import inspect
+from typing import List, Dict, Tuple, Any, Optional
 from scipy.spatial.distance import cosine
+from deepface import DeepFace
 
-# Path to the shape predictor file
-datFile = os.path.join(os.path.dirname(__file__), "shape_predictor_68_face_landmarks.dat")
+# ------------------------------------------------------------------
+# Resources ---------------------------------------------------------
+# ------------------------------------------------------------------
+datFile = os.path.join(
+    os.path.dirname(__file__), "shape_predictor_68_face_landmarks.dat"
+)
 
-# Load the cascade
 face_cascade = cv2.CascadeClassifier(
     cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
 )
-
-# Load the detector and predictor
-detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(datFile)
 
-# Build Facenet-128D once, at import time
-_FACENET_MODEL = DeepFace.build_model("Facenet")
-_FACENET_LOCK = threading.Lock()          # TensorFlow is not thread-safe
+# ------------------------------------------------------------------
+# DeepFace (build once, guard with lock) ---------------------------
+# ------------------------------------------------------------------
+_TF_LOCK = threading.Lock()
 
-# # Load the model
-# model = tf.keras.applications.ResNet50(weights='imagenet')
+_HAS_MODEL_KW = "model" in inspect.signature(DeepFace.represent).parameters
+if _HAS_MODEL_KW:                         # DeepFace 0.0.46-0.0.92
+    _FACENET_MODEL = DeepFace.build_model("Facenet")
+else:                                     # ≤0.0.45 or ≥0.0.93
+    _FACENET_MODEL = None                 # DeepFace will use its own cache
 
-
-def detect_faces(img):
-    '''The function `detect_faces` takes an image as input, converts it
-    to grayscale, detects faces using a cascade classifier, and returns
-    a list of coordinates representing the detected faces.
-    
-    Parameters
-    ----------
-    img
-        The input image on which you want to detect faces.
-    
-    Returns
-    -------
-        a list of faces detected in the image.
-    '''
-    # Convert the image to grayscale
+# ------------------------------------------------------------------
+# Face helpers ------------------------------------------------------
+# ------------------------------------------------------------------
+def detect_faces(img: np.ndarray) -> List[Tuple[int, int, int, int]]:
+    """Return list of (x, y, w, h) rectangles for each detected face."""
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Display the frame
-
-    # Detect faces
-    faces = face_cascade.detectMultiScale(
+    return face_cascade.detectMultiScale(
         gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
     )
 
-    # Return the list of faces
-    return faces
 
-
-def align_face(img, face):
-    '''The `align_face` function takes an image and a bounding box of a face as input, and aligns the face
-    in the image based on the position of the eyes.
-    
-    Parameters
-    ----------
-    img
-        The input image that contains the face you want to align. It should be in BGR format.
-    face
-        The "face" parameter is a list containing the coordinates and dimensions of the detected face in
-    the image. It should have the format [x, y, width, height], where:
-    
-    Returns
-    -------
-        the aligned face image.
-    
-    '''
-    # Convert the image to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Detect facial landmarks
-    rect = dlib.rectangle(
-        int(face[0]), int(face[1]), int(face[0] + face[2]), int(face[1] + face[3])
-    )
-    shape = predictor(gray, rect)
-    shape = np.array(
-        [(shape.part(j).x, shape.part(j).y) for j in range(shape.num_parts)]
-    )
-
-    # Specify the size of the aligned face image
-    desired_face_width = 256
-    desired_face_height = desired_face_width
-
-    # Specify the indexes of the facial landmarks
-    # for the left eye and the right eye
-    left_eye_landmarks = [36, 37, 38, 39, 40, 41]
-    right_eye_landmarks = [42, 43, 44, 45, 46, 47]
-
-    # Calculate the center of the left eye and the right eye
-    left_eye_center = np.mean(shape[left_eye_landmarks], axis=0).astype(int)
-    right_eye_center = np.mean(shape[right_eye_landmarks], axis=0).astype(int)
-
-    # Calculate the angle between the eye centers
-    dY = right_eye_center[1] - left_eye_center[1]
-    dX = right_eye_center[0] - left_eye_center[0]
-    angle = np.degrees(np.arctan2(dY, dX))
-
-    # Calculate the scale of the new resulting image by taking the ratio of
-    # the distance between eyes in the current image to the ratio of distance
-    # between eyes in the desired image
-    dist = np.sqrt((dX**2) + (dY**2))
-    desired_dist = (
-        desired_face_width * 0.27
-    )  # The desired distance is set to be approximately 27% of the face width
-    scale = desired_dist / dist
-
-    # Calculate the center of the eyes
-    eyes_center = (
-        int((left_eye_center[0] + right_eye_center[0]) // 2),
-        int((left_eye_center[1] + right_eye_center[1]) // 2),
-    )
-
-    # Get the rotation matrix for rotating and scaling the face
-    M = cv2.getRotationMatrix2D(eyes_center, angle, scale)
-
-    # Update the translation component of the matrix
-    tX = desired_face_width * 0.5
-    tY = desired_face_height * 0.3
-    M[0, 2] += tX - eyes_center[0]
-    M[1, 2] += tY - eyes_center[1]
-
-    # Apply the affine transformation
-    (w, h) = (desired_face_width, desired_face_height)
-    output = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_CUBIC)
-
-    return output
-
-
-# def extract_features(face):
-#     # Resize the face to 160x160 pixels as required by the FaceNet model
-#     face_pixels = cv2.resize(face, (224, 224))
-
-#     # Convert the face from BGR to RGB color format
-#     face_pixels = face_pixels[:, :, ::-1]
-
-#     # Scale pixel values
-#     face_pixels = face_pixels.astype('float32')
-#     mean, std = face_pixels.mean(), face_pixels.std()
-#     face_pixels = (face_pixels - mean) / std
-
-#     # Transform face into one sample
-#     samples = np.expand_dims(face_pixels, axis=0)
-
-#     # Make prediction to get embedding
-#     yhat = model.predict(samples)
-
-#     return yhat[0]
-
-
-def extract_features(bgr_img):
-    """Return a list with one dict: {'embedding': 128-D numpy array}
-    `bgr_img` is an already-aligned face as a NumPy BGR image.
+def align_face(img: np.ndarray, face: Tuple[int, int, int, int]) -> np.ndarray:
     """
-    with _FACENET_LOCK:
-        rep = DeepFace.represent(
-            img_path=bgr_img,          # ndarray supported – no temp file
-            model=_FACENET_MODEL,
-            detector_backend="skip",   # we already detected/aligned
-            enforce_detection=False
-        )
-    return rep
+    Affine-align a face to 256 × 256 BGR.  `face` = (x, y, w, h).
+    This variant converts coordinates to plain Python int so
+    cv2.getRotationMatrix2D never raises “Can't parse 'center'”.
+    """
+    x, y, w, h = map(int, face)
+    rect = dlib.rectangle(x, y, x + w, y + h)
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    land = predictor(gray, rect)
+    pts  = np.array([(land.part(i).x, land.part(i).y)
+                     for i in range(land.num_parts)])
+
+    # eye centres ---------------------------------------------------
+    le = pts[[36, 37, 38, 39, 40, 41]].mean(axis=0)
+    re = pts[[42, 43, 44, 45, 46, 47]].mean(axis=0)
+
+    # convert to native int to satisfy OpenCV
+    le_x, le_y = map(int, le)
+    re_x, re_y = map(int, re)
+
+    dY, dX = re_y - le_y, re_x - le_x
+    angle  = np.degrees(np.arctan2(dY, dX))
+    dist   = np.hypot(dX, dY)
+
+    out_w = out_h = 256
+    desired_dist = out_w * 0.27
+    scale = desired_dist / dist if dist else 1.0  # avoid /0
+
+    eyes_c = (int((le_x + re_x) // 2), int((le_y + re_y) // 2))
+
+    M = cv2.getRotationMatrix2D(eyes_c, float(angle), float(scale))
+    M[0, 2] += out_w * 0.5 - eyes_c[0]
+    M[1, 2] += out_h * 0.3 - eyes_c[1]
+
+    return cv2.warpAffine(img, M, (out_w, out_h), flags=cv2.INTER_CUBIC)
 
 
-def match_face(embedding, database):
-    '''The function `match_face` takes an input face embedding and a database of face embeddings, and
-    returns the name of the closest matching face in the database if the distance is below a certain
-    threshold, otherwise it returns None.
-    
-    Parameters
-    ----------
-    embedding
-        The embedding parameter is a numerical representation of a face. It is typically a vector of
-    numbers that captures the unique features of a face.
-    database
-        The database parameter is a dictionary that contains the embeddings of known faces. The keys of the
-    dictionary are the names of the individuals and the values are the corresponding embeddings.
-    
-    Returns
-    -------
-        the name of the closest match in the database if the minimum distance is less than 0.50. Otherwise,
-    it returns None.
-    
-    '''
-    min_distance = 100  # Initialize min_distance with a large number
-    match = None  # Initialize match with None
+# ------------------------------------------------------------------
+# Feature extraction -----------------------------------------------
+# ------------------------------------------------------------------
+def _prepare_rgb(img_bgr: np.ndarray) -> np.ndarray:
+    """Validate & convert BGR → RGB uint8 contiguous array."""
+    if img_bgr is None or img_bgr.size == 0:
+        raise ValueError("Empty image passed to extract_features()")
 
-    # Loop over all faces in the database
-    for name, db_embedding in database.items():
-        # Calculate the cosine distance between the input
-        # embedding and the database embedding
-        distance = cosine(embedding, db_embedding)
+    if img_bgr.dtype != np.uint8:
+        img_bgr = np.clip(img_bgr, 0, 255).astype("uint8")
 
-        # If the distance is less than the min_distance, update
-        # the min_distance and match
-        if distance < min_distance:
-            min_distance = distance
-            match = name
+    rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    return np.ascontiguousarray(rgb)
 
-    # If the min_distance is less than a threshold, return the match
-    if min_distance < 0.50:
-        return match
-    else:
-        return None
+
+def extract_features(bgr_face: np.ndarray) -> List[Dict[str, Any]]:
+    """
+    Return [{'embedding': 128-D np.ndarray}] for an aligned BGR face.
+    Thread-safe and DeepFace-version-agnostic.
+    """
+    rgb = _prepare_rgb(bgr_face)
+
+    with _TF_LOCK:
+        if _HAS_MODEL_KW:                   # classic API with `model=`
+            return DeepFace.represent(
+                img_path=rgb,
+                model=_FACENET_MODEL,
+                detector_backend="skip",
+                enforce_detection=False,
+                align=False,                # ← disable extra alignment
+            )
+        else:                               # new / old API without `model`
+            return DeepFace.represent(
+                img_path=rgb,
+                model_name="Facenet",
+                detector_backend="skip",
+                enforce_detection=False,
+                align=False,                # ← disable extra alignment
+            )
+
+# ------------------------------------------------------------------
+# Face-to-face matching --------------------------------------------
+# ------------------------------------------------------------------
+def match_face(
+    embedding: np.ndarray,
+    database: Dict[str, np.ndarray],
+    thresh: float = 0.50,
+) -> Optional[str]:
+    """
+    Return the best matching name (cosine distance < `thresh`) or None.
+    """
+    best_name, best_dist = None, 10.0
+    for name, db_emb in database.items():
+        dist = cosine(embedding, db_emb)
+        if dist < best_dist:
+            best_name, best_dist = name, dist
+    return best_name if best_dist < thresh else None
