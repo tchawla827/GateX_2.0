@@ -7,9 +7,9 @@ myenv/
 venv/
 nullpointers-123-firebase-adminsdk-z2xr3-4e681f2a90.json
 gatex-2-firebase-adminsdk-fbsvc-40934da302.json
-gatex-2-firebase-adminsdk-fbsvc-40934da302.json
+
 *.zip
-# .env
+.env
 
 # static/images
 # static/recognized

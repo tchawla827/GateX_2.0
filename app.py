@@ -31,22 +31,42 @@ from utils.configuration import load_yaml
 from jinja2 import Environment, select_autoescape
 
 
+
 config_file_path = load_yaml("configs/database.yaml")
 
-TEACHER_PASSWORD_HASH = config_file_path["teacher"]["password_hash"]
+TEACHER_PASSWORD_HASH = os.environ.get(
+    "TEACHER_PASSWORD_HASH",
+    config_file_path["teacher"].get("password_hash"),
+)
 
-cred = credentials.Certificate(config_file_path["firebase"]["pathToServiceAccount"])
+cred_path = os.environ.get(
+    "FIREBASE_CREDENTIALS_PATH",
+    config_file_path["firebase"].get("pathToServiceAccount"),
+)
+cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(
     cred,
     {
-        "databaseURL": config_file_path["firebase"]["databaseURL"],
+        "databaseURL": os.environ.get(
+            "FIREBASE_DB_URL",
+            config_file_path["firebase"].get("databaseURL"),
+        )
     },
 )
 
 cloudinary.config(
-    cloud_name=config_file_path["cloudinary"]["cloud_name"],
-    api_key=config_file_path["cloudinary"]["api_key"],
-    api_secret=config_file_path["cloudinary"]["api_secret"],
+    cloud_name=os.environ.get(
+        "CLOUDINARY_CLOUD_NAME",
+        config_file_path["cloudinary"].get("cloud_name"),
+    ),
+    api_key=os.environ.get(
+        "CLOUDINARY_API_KEY",
+        config_file_path["cloudinary"].get("api_key"),
+    ),
+    api_secret=os.environ.get(
+        "CLOUDINARY_API_SECRET",
+        config_file_path["cloudinary"].get("api_secret"),
+    ),
 )
 
 app = Flask(__name__, template_folder="template", static_folder="static")
@@ -55,7 +75,7 @@ app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
 )
 app.jinja_env.globals.update(url_for=url_for)
-app.secret_key = "123456"
+app.secret_key = os.environ.get("SECRET_KEY", "123456")
 socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
 

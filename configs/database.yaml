@@ -1,9 +1,9 @@
 teacher:
-  password_hash: pbkdf2:sha256:150000$25Q5cg4m$6f959f66588efd66dd713f3f6b4a1efd66a9fbc4bb381d44f5a5189781845ff6
+  password_hash: ${TEACHER_PASSWORD_HASH}
 firebase:
-  databaseURL: "https://gatex-2-default-rtdb.firebaseio.com/"
-  pathToServiceAccount: "gatex-2-firebase-adminsdk-fbsvc-40934da302.json"
+  databaseURL: ${FIREBASE_DB_URL}
+  pathToServiceAccount: ${FIREBASE_CREDENTIALS_PATH}
 cloudinary:
-  cloud_name: "dduk4nh1y"
-  api_key: "286227615131697"
-  api_secret: "uxMiZUPWksh5lYO8b6rUZAtLzL4"
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
