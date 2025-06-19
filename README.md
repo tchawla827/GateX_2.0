@@ -119,6 +119,8 @@ To build and run GateX using Docker:
 docker build -t gatex .
 docker run -p 5000:5000 gatex
 ```
+The container now starts the application with **Gunicorn** using the
+`eventlet` worker so WebSocket communication works out of the box.
 
 ## Usage
 
