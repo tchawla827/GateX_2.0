@@ -736,6 +736,7 @@ def submit_outpass_request():
     return redirect(url_for("student_dashboard", roll_number=roll_number))
 
 
+@app.route("/admin_review")
 def admin_review():
     outpass_requests_ref = db.reference("Outpass Requests")
     outpass_requests = outpass_requests_ref.get()
