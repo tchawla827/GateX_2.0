@@ -85,11 +85,29 @@ GateX offers the following features:
    - Download: [shape_predictor_68_face_landmarks.dat.bz2](https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2)
    - Extract and place `shape_predictor_68_face_landmarks.dat` in the `detection/` folder.
 
-5. **Run the Application**:
+5. **Generate a Self-Signed Certificate**:
+   - Install [`mkcert`](https://github.com/FiloSottile/mkcert) and run:
+     ```bash
+     mkcert 192.168.0.102
+     ```
+     This creates `192.168.0.102.pem` and `192.168.0.102-key.pem` in the current directory.
+   - Rename or copy them to `cert.pem` and `key.pem` in the project root. Alternatively, use OpenSSL:
+     ```bash
+     openssl req -newkey rsa:2048 -nodes -x509 -days 365 \
+       -subj "/CN=192.168.0.102" \
+       -keyout key.pem -out cert.pem
+     ```
+
+6. **Run the Application**:
    ```bash
    python app.py
    ```
-   Access the app at `http://127.0.0.1:5000`.
+   Access the app at `https://192.168.0.102:5000` from any device on the LAN.
+   - To share over the internet, install [ngrok](https://ngrok.com/) and run:
+     ```bash
+     ngrok http https://192.168.0.102:5000
+     ```
+     Ngrok will provide a public HTTPS URL forwarding to your local server.
 
 ---
 
