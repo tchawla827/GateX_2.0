@@ -49,6 +49,8 @@ def match_with_database(img, database):
 
 cred_json = os.environ["FIREBASE_CREDENTIALS_JSON"]
 cred_info = json.loads(cred_json)
+if "private_key" in cred_info:
+    cred_info["private_key"] = cred_info["private_key"].replace("\\n", "\n")
 cred = credentials.Certificate(cred_info)
 firebase_admin.initialize_app(
     cred,

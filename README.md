@@ -90,6 +90,7 @@ GateX offers the following features:
    - Sign up for [Cloudinary](https://cloudinary.com/) and obtain your **Cloud name**, **API key**, and **API secret**.
   - Copy `.env.example` to `.env` and populate the values for `FIREBASE_CREDENTIALS_JSON`, `FIREBASE_DB_URL`, and the Cloudinary variables.
   - The value of `FIREBASE_CREDENTIALS_JSON` should be the entire Firebase service account JSON and must **not** be committed to version control.
+  - If the `private_key` contains newlines, represent them as `\n` in the `.env` file.
 
 4. **Download Face Landmark Model**:
    - Download: [shape_predictor_68_face_landmarks.dat.bz2](https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2)
