@@ -16,6 +16,7 @@ import base64
 import numpy as np
 
 import os
+import json
 import cv2
 from datetime import datetime
 import firebase_admin
@@ -39,11 +40,12 @@ TEACHER_PASSWORD_HASH = os.environ.get(
     config_file_path["teacher"].get("password_hash"),
 )
 
-cred_path = os.environ.get(
-    "FIREBASE_CREDENTIALS_PATH",
-    config_file_path["firebase"].get("pathToServiceAccount"),
+cred_json = os.environ.get(
+    "FIREBASE_CREDENTIALS_JSON",
+    config_file_path["firebase"].get("serviceAccountJson"),
 )
-cred = credentials.Certificate(cred_path)
+cred_info = json.loads(cred_json or "{}")
+cred = credentials.Certificate(cred_info)
 firebase_admin.initialize_app(
     cred,
     {

@@ -7,6 +7,8 @@ from detection.face_matching import *
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import os
+import json
 
 
 def match_with_database(img, database):
@@ -45,7 +47,9 @@ def match_with_database(img, database):
     cv2.destroyAllWindows()
 
 
-cred = credentials.Certificate("../database/serviceAccountKey.json")
+cred_json = os.environ["FIREBASE_CREDENTIALS_JSON"]
+cred_info = json.loads(cred_json)
+cred = credentials.Certificate(cred_info)
 firebase_admin.initialize_app(
     cred,
     {
