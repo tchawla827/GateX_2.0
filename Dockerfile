@@ -23,4 +23,6 @@ COPY . .
 EXPOSE 5000
 
 # Run the application with Gunicorn using the eventlet worker
-CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "app:app"]
+# Dockerfile
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-t", "120", "-b", "0.0.0.0:5000", "app:app"]
+
