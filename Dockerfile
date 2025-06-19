@@ -27,4 +27,4 @@ ENV DEEPFACE_HOME=/app/.deepface
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-t", "120", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-t", "120", "-b", "0.0.0.0:7860", "app:app"]
