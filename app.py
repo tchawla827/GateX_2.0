@@ -427,10 +427,10 @@ def markout():
             approved_request_key = None
 
             if approved_requests:
-                for request_key, request in approved_requests.items():
+                for request_key, req in approved_requests.items():
                     if (
-                        request.get("status") == "Approved"
-                        and request.get("outgoing_date") == current_date
+                        req.get("status") == "Approved"
+                        and req.get("outgoing_date") == current_date
                     ):
                         has_approved_request = True
                         approved_request_key = request_key
@@ -818,8 +818,8 @@ def admin_review():
     )
 
     # Remove the temporary outgoing_datetime key after sorting
-    for request in request_list:
-        request.pop("outgoing_datetime", None)
+    for req_item in request_list:
+        req_item.pop("outgoing_datetime", None)
 
     return render_template("admin_review.html", requests=request_list)
 
