@@ -1,4 +1,7 @@
-﻿absl-py==2.3.0
+﻿--find-links ./wheelhouse
+dlib==20.0.0
+
+absl-py==2.3.0
 anyio==4.9.0
 astunparse==1.6.3
 beautifulsoup4==4.13.4
@@ -13,7 +16,7 @@ cloudinary==1.44.1
 colorama==0.4.6
 cryptography==45.0.4
 deepface==0.0.93
-dlib==20.0.0
+# dlib==20.0.0
 filelock==3.18.0
 fire==0.7.0
 firebase-admin==6.9.0
