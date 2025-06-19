@@ -176,21 +176,28 @@
 
     <script>
         document.getElementById('capture-button').addEventListener('click', function () {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ url_for("markout") }}', true);  // Corrected url_for usage
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    alert('Marked out successfully! Redirecting to home...');
-                    window.location.href = '{{ url_for("home") }}';  // Corrected url_for usage
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/jpeg', 0.7);
+
+            fetch('{{ url_for("markout") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: dataURL })
+            }).then(resp => resp.json()).then(data => {
+                if (data.status === 'success') {
+                    alert(data.message + ' Redirecting to home...');
+                    window.location.href = '{{ url_for("home") }}';
                 } else {
-                    xhr.responseText && JSON.parse(xhr.responseText).message &&
-                        alert(JSON.parse(xhr.responseText).message);
+                    alert(data.message);
                 }
-            };
-            xhr.onerror = function () {
+            }).catch(() => {
                 alert('An error occurred while processing your request.');
-            };
-            xhr.send();
+            });
         });
     </script>
     

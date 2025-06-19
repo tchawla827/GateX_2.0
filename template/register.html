@@ -159,14 +159,23 @@
         const addInfoUrl = "{{ url_for('add_info') }}";
     
         document.getElementById('capture-button').addEventListener('click', function() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', captureUrl, true); // Use the JavaScript variable
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    window.location.href = addInfoUrl; // Use the JavaScript variable
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/jpeg', 0.7);
+
+            fetch(captureUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: dataURL })
+            }).then(response => {
+                if (response.status === 200) {
+                    window.location.href = addInfoUrl;
                 }
-            };
-            xhr.send();
+            });
         });
     </script>
     
