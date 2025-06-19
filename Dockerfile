@@ -22,5 +22,5 @@ COPY . .
 # Expose port used by the Flask app
 EXPOSE 5000
 
-# Run the application
-CMD ["python", "app.py"]
+# Run the application with Gunicorn using the eventlet worker
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "app:app"]
