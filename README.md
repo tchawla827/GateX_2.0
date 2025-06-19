@@ -1,9 +1,11 @@
+---
 title: GateX
 emoji: 📊
 colorFrom: indigo
 colorTo: pink
 sdk: docker
 pinned: false
+---
 
 # GateX Gate Outpass Management System
 
@@ -209,3 +211,9 @@ Contributions are welcome! Open an issue or submit a pull request for bug fixes,
 🔗 [LinkedIn](https://www.linkedin.com/in/tavish-chawla-3b1673278/)
 
 
+title: GateX
+emoji: 📊
+colorFrom: indigo
+colorTo: pink
+sdk: docker
+pinned: false
