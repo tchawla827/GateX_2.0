@@ -256,7 +256,16 @@ def uploaded_file(filename):
 @app.route("/markin", methods=["POST"])
 def markin():
     global filename, detection
-    frame = current_frame
+    frame = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if data and 'image' in data:
+            try:
+                frame = b64_to_cv2(data['image'])
+            except Exception as e:
+                app.logger.error(f"Failed to decode image data: {e}")
+    if frame is None:
+        frame = current_frame
 
     if frame is not None:
         out_students_ref = db.reference("Out Students")
@@ -332,7 +341,16 @@ def markin():
 @app.route("/markout", methods=["POST"])
 def markout():
     global filename, detection
-    frame = current_frame
+    frame = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if data and 'image' in data:
+            try:
+                frame = b64_to_cv2(data['image'])
+            except Exception as e:
+                app.logger.error(f"Failed to decode image data: {e}")
+    if frame is None:
+        frame = current_frame
 
     if frame is not None:
         ref = db.reference("Students")
@@ -409,10 +427,10 @@ def markout():
             approved_request_key = None
 
             if approved_requests:
-                for request_key, request in approved_requests.items():
+                for request_key, req in approved_requests.items():
                     if (
-                        request.get("status") == "Approved"
-                        and request.get("outgoing_date") == current_date
+                        req.get("status") == "Approved"
+                        and req.get("outgoing_date") == current_date
                     ):
                         has_approved_request = True
                         approved_request_key = request_key
@@ -493,7 +511,16 @@ def markout():
 @app.route("/capture", methods=["POST"])
 def capture():
     global filename
-    frame = current_frame
+    frame = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if data and 'image' in data:
+            try:
+                frame = b64_to_cv2(data['image'])
+            except Exception as e:
+                app.logger.error(f"Failed to decode image data: {e}")
+    if frame is None:
+        frame = current_frame
     if frame is not None:
 
         ref = db.reference("Students")
@@ -791,8 +818,8 @@ def admin_review():
     )
 
     # Remove the temporary outgoing_datetime key after sorting
-    for request in request_list:
-        request.pop("outgoing_datetime", None)
+    for req_item in request_list:
+        req_item.pop("outgoing_datetime", None)
 
     return render_template("admin_review.html", requests=request_list)
 
