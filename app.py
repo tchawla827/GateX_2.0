@@ -49,6 +49,19 @@ cloudinary.config(
     api_secret=config_file_path["cloudinary"]["api_secret"],
 )
 
+app = Flask(__name__, template_folder="template", static_folder="static")
+
+app.jinja_env = Environment(
+    loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
+)
+app.jinja_env.globals.update(url_for=url_for)
+app.secret_key = "123456"
+socketio = SocketIO(app, cors_allowed_origins="*")
+current_frame = None
+
+UPLOAD_FOLDER = "static/images"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 
 def upload_database(filename):
     """
@@ -139,20 +152,6 @@ def match_with_database(img, database):
             return "No face detected"
 
 
-app = Flask(__name__, template_folder="template", static_folder="static")
-
-
-app.jinja_env = Environment(
-    loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
-)
-app.jinja_env.globals.update(url_for=url_for)
-app.secret_key = "123456"
-socketio = SocketIO(app, cors_allowed_origins="*")
-current_frame = None
-
-
-UPLOAD_FOLDER = "static/images"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 @app.route("/")
