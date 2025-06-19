@@ -159,7 +159,7 @@
         <div id="right-column">
             <button id="capture-button">Mark Out</button>
             <div class="video-container">
-                <iframe id="video" src="{{ url_for('video_feed') }}"></iframe>
+                <video id="video" autoplay playsinline style="width:320px;height:240px;"></video>
             </div>
         </div>
     </div>
@@ -194,6 +194,10 @@
         });
     </script>
     
+<script type="module">
+import { startCamera } from "{{ url_for('static', filename='js/camera-socket.js') }}";
+startCamera('markout');
+</script>
 </body>
 
 </html>

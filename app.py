@@ -5,13 +5,15 @@ from flask import (
     request,
     redirect,
     url_for,
-    Response,
     flash,
     jsonify,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from jinja2 import select_autoescape, FileSystemLoader
+from flask_socketio import SocketIO, emit
+import base64
+import numpy as np
 
 import os
 import cv2
@@ -74,6 +76,36 @@ def upload_database(filename):
 
     return valid, error
 
+def b64_to_cv2(data_url: str):
+    header, b64_data = data_url.split(',', 1)
+    jpg_bytes = base64.b64decode(b64_data)
+    nparr = np.frombuffer(jpg_bytes, np.uint8)
+    return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+@socketio.on('video_frame')
+def handle_frame(payload):
+    global current_frame
+    frame = b64_to_cv2(payload['image'])
+    current_frame = frame
+    students_data = db.reference('Students').get()
+    database = {}
+    if isinstance(students_data, list):
+        for studentInfo in students_data:
+            if studentInfo:
+                name = studentInfo.get('name')
+                emb = studentInfo.get('embeddings')
+                if name and emb:
+                    database[name] = emb
+    elif isinstance(students_data, dict):
+        for _id, studentInfo in students_data.items():
+            if studentInfo:
+                name = studentInfo.get('name')
+                emb = studentInfo.get('embeddings')
+                if name and emb:
+                    database[name] = emb
+    match = match_with_database(frame, database)
+    emit('match_result', {'op': payload.get('op'), 'result': match})
+
 
 def match_with_database(img, database):
     """The function "match_with_database" takes an image and a database as input, detects faces in the
@@ -115,6 +147,8 @@ app.jinja_env = Environment(
 )
 app.jinja_env.globals.update(url_for=url_for)
 app.secret_key = "123456"
+socketio = SocketIO(app, cors_allowed_origins="*")
+current_frame = None
 
 
 UPLOAD_FOLDER = "static/images"
@@ -218,18 +252,14 @@ def uploaded_file(filename):
     return f'<h1>File uploaded successfully</h1><img src="{url}" alt="Uploaded image">'
 
 
-@app.route("/video_feed")
-def video_feed():
-    return Response(gen_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
-
 
 
 @app.route("/markin", methods=["POST"])
 def markin():
     global filename, detection
-    ret, frame = video.read()
+    frame = current_frame
 
-    if ret:
+    if frame is not None:
         out_students_ref = db.reference("Out Students")
         students_data = db.reference("Students").get()
 
@@ -303,9 +333,9 @@ def markin():
 @app.route("/markout", methods=["POST"])
 def markout():
     global filename, detection
-    ret, frame = video.read()
+    frame = current_frame
 
-    if ret:
+    if frame is not None:
         ref = db.reference("Students")
         students_data = ref.get()
 
@@ -464,8 +494,8 @@ def markout():
 @app.route("/capture", methods=["POST"])
 def capture():
     global filename
-    ret, frame = video.read()
-    if ret:
+    frame = current_frame
+    if frame is not None:
 
         ref = db.reference("Students")
 
@@ -543,8 +573,8 @@ def submit_info():
 @app.route("/recognize", methods=["GET", "POST"])
 def recognize():
     global detection
-    ret, frame = video.read()
-    if ret:
+    frame = current_frame
+    if frame is not None:
 
         ref = db.reference("Students")
 
@@ -707,20 +737,6 @@ def submit_outpass_request():
     return redirect(url_for("student_dashboard", roll_number=roll_number))
 
 
-def gen_frames():
-    global video
-    video = cv2.VideoCapture(0)
-    while True:
-        success, frame = video.read()
-        if not success:
-            break
-        else:
-            ret, buffer = cv2.imencode(".jpg", frame)
-            frame = buffer.tobytes()
-        yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
-
-
-@app.route("/admin_review")
 def admin_review():
     outpass_requests_ref = db.reference("Outpass Requests")
     outpass_requests = outpass_requests_ref.get()
@@ -777,4 +793,4 @@ def view_history():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
