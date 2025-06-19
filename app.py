@@ -557,11 +557,22 @@ def submit_info():
             flash("No face detected. Please try again.")
             return redirect(url_for("add_info"))
 
-        embedding = None
-        for face in faces:
+
+    embedding = None
+    for face in faces:
+        try:
             aligned_face = align_face(data, face)
             embedding = extract_features(aligned_face)
             break
+        except Exception as e:
+            app.logger.error(f"Error extracting features: {e}")
+            flash("Failed to process face image. Please try again.")
+            return redirect(url_for("add_info"))
+
+    if not embedding or not isinstance(embedding, list) or "embedding" not in embedding[0]:
+        flash("Failed to extract facial features. Please try again.")
+        return redirect(url_for("add_info"))
+
 
         ref = db.reference("Students")
         student_data = {
