@@ -256,7 +256,16 @@ def uploaded_file(filename):
 @app.route("/markin", methods=["POST"])
 def markin():
     global filename, detection
-    frame = current_frame
+    frame = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if data and 'image' in data:
+            try:
+                frame = b64_to_cv2(data['image'])
+            except Exception as e:
+                app.logger.error(f"Failed to decode image data: {e}")
+    if frame is None:
+        frame = current_frame
 
     if frame is not None:
         out_students_ref = db.reference("Out Students")
@@ -332,7 +341,16 @@ def markin():
 @app.route("/markout", methods=["POST"])
 def markout():
     global filename, detection
-    frame = current_frame
+    frame = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if data and 'image' in data:
+            try:
+                frame = b64_to_cv2(data['image'])
+            except Exception as e:
+                app.logger.error(f"Failed to decode image data: {e}")
+    if frame is None:
+        frame = current_frame
 
     if frame is not None:
         ref = db.reference("Students")
@@ -493,7 +511,16 @@ def markout():
 @app.route("/capture", methods=["POST"])
 def capture():
     global filename
-    frame = current_frame
+    frame = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if data and 'image' in data:
+            try:
+                frame = b64_to_cv2(data['image'])
+            except Exception as e:
+                app.logger.error(f"Failed to decode image data: {e}")
+    if frame is None:
+        frame = current_frame
     if frame is not None:
 
         ref = db.reference("Students")
