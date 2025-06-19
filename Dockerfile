@@ -19,8 +19,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-# Expose port used by the Flask app
-EXPOSE 5000
+# Default port for the Flask app. Render will override this with the PORT
+# environment variable it provides.
+ENV PORT=5000
 
-# Run the application with Gunicorn using the eventlet worker
-CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "app:app"]
+# Expose the port so docker users know which port is intended to be published
+EXPOSE ${PORT}
+
+# Run the application with Gunicorn using the eventlet worker. Using `sh -c`
+# allows environment variable expansion so the container binds to whichever
+# port is provided via the `PORT` environment variable.
+CMD ["sh", "-c", "gunicorn -k eventlet -w 1 -b 0.0.0.0:${PORT} app:app"]
