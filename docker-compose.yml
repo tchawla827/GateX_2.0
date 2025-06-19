@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  gatex:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+    volumes:
+      - ./configs:/app/configs:ro
+      # Mount the Firebase service account JSON
+      - ./gatex-2-firebase-adminsdk-fbsvc-40934da302.json:/app/gatex-2-firebase-adminsdk-fbsvc-40934da302.json:ro
+      # Mount the dlib face landmark model
+      - ./detection/shape_predictor_68_face_landmarks.dat:/app/detection/shape_predictor_68_face_landmarks.dat:ro

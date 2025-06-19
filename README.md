@@ -99,6 +99,14 @@ GateX offers the following features:
    ```
    Access the app at `http://localhost:5000`.
 
+7. **Run with Docker Compose**:
+   Make sure the `shape_predictor_68_face_landmarks.dat` and your Firebase
+   service account JSON are available in the project directory. Then start
+   everything with:
+   ```bash
+   docker compose up --build
+   ```
+
 ---
 
 ## Usage
