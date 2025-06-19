@@ -544,6 +544,11 @@ def submit_info():
 
     faces = detect_faces(data)
 
+    if not faces:
+        flash("No face detected. Please try again.")
+        return redirect(url_for("add_info"))
+
+    embedding = None
     for face in faces:
         aligned_face = align_face(data, face)
         embedding = extract_features(aligned_face)
