@@ -7,4 +7,4 @@ services:
     environment:
       HOST: ${HOST:-0.0.0.0}
       PORT: ${PORT:-5000}
-    command: gunicorn -k eventlet -w 1 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app
+    command: gunicorn --timeout 120 -k eventlet -w 2 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app

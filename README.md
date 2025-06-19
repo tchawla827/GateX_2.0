@@ -103,7 +103,7 @@ GateX offers the following features:
 
 6. **Run the Application**:
    ```bash
-   gunicorn -k eventlet -w 1 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app
+   gunicorn --timeout 120 -k eventlet -w 2 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app
    ```
    Set the `HOST` and `PORT` environment variables to control where the server
    binds. When deploying publicly, run behind an HTTPS termination proxy (such

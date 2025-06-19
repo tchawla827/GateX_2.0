@@ -29,4 +29,4 @@ EXPOSE ${PORT}
 # Run the application with Gunicorn using the eventlet worker. Using `sh -c`
 # allows environment variable expansion so the container binds to whichever
 # port is provided via the `PORT` environment variable.
-CMD ["sh", "-c", "gunicorn -k eventlet -w 1 -b 0.0.0.0:${PORT} app:app"]
+CMD ["sh", "-c", "gunicorn --timeout 120 -k eventlet -w 2 -b 0.0.0.0:${PORT} app:app"]
