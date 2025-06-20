@@ -751,7 +751,7 @@ def student_dashboard(roll_number):
 
 @app.route("/mark_out")
 def mark_out():
-    return render_template("mark_out.html")
+    return render_template("mark_out.html",now=datetime.now())
 
 
 @app.route("/mark_in")
