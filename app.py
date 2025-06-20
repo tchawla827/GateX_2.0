@@ -71,7 +71,11 @@ current_frame = None
 
 @app.context_processor
 def inject_logged_in():
-    return {"logged_in": session.get("logged_in")}
+    return {
+        "logged_in": session.get("logged_in"),
+        "teacher_logged_in": session.get("teacher_logged_in"),
+        "student_logged_in": session.get("student_logged_in"),
+    }
 
 
 def login_required(view_func):
@@ -79,6 +83,28 @@ def login_required(view_func):
     @wraps(view_func)
     def wrapped_view(*args, **kwargs):
         if not session.get("logged_in"):
+            return redirect(url_for("login"))
+        return view_func(*args, **kwargs)
+
+    return wrapped_view
+
+
+def teacher_login_required(view_func):
+    """Decorator to ensure a teacher is logged in before accessing a route."""
+    @wraps(view_func)
+    def wrapped_view(*args, **kwargs):
+        if not session.get("teacher_logged_in"):
+            return redirect(url_for("teacher_login"))
+        return view_func(*args, **kwargs)
+
+    return wrapped_view
+
+
+def student_login_required(view_func):
+    """Decorator to ensure a student is logged in before accessing a route."""
+    @wraps(view_func)
+    def wrapped_view(*args, **kwargs):
+        if not session.get("student_logged_in"):
             return redirect(url_for("login"))
         return view_func(*args, **kwargs)
 
@@ -188,24 +214,26 @@ def login():
 @app.route("/logout")
 def logout():
     session.pop("logged_in", None)
+    session.pop("teacher_logged_in", None)
+    session.pop("student_logged_in", None)
     return render_template(
         "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
     )
 
 @app.route("/home")
-@login_required
+@teacher_login_required
 def home():
     return render_template("home.html",now=datetime.now())
 
 
 @app.route("/try")
-@login_required
+@teacher_login_required
 def test():
     return render_template("try.html",now=datetime.now())  # Create a basic test.html template to test url_for
 
 
 @app.route("/add_info")
-@login_required
+@teacher_login_required
 def add_info():
     return render_template("add_info.html",now=datetime.now())
 
@@ -218,6 +246,8 @@ def teacher_login():
 
         if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
             session["logged_in"] = True
+            session["teacher_logged_in"] = True
+            session.pop("student_logged_in", None)
             return redirect(url_for("home"))
         else:
             flash("Incorrect credentials")
@@ -230,7 +260,7 @@ def teacher_login():
 
 
 @app.route("/upload", methods=["POST"])
-@login_required
+@teacher_login_required
 def upload():
     global filename
 
@@ -274,7 +304,7 @@ def allowed_file(filename):
 
 
 @app.route("/uploads/<filename>")
-@login_required
+@teacher_login_required
 def uploaded_file(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -286,7 +316,7 @@ def uploaded_file(filename):
 
 
 @app.route("/markin", methods=["POST"])
-@login_required
+@teacher_login_required
 def markin():
     global filename, detection
     frame = None
@@ -372,7 +402,7 @@ def markin():
 
 
 @app.route("/markout", methods=["POST"])
-@login_required
+@teacher_login_required
 def markout():
     global filename, detection
     frame = None
@@ -543,7 +573,7 @@ def markout():
 
 
 @app.route("/capture", methods=["POST"])
-@login_required
+@teacher_login_required
 def capture():
     global filename
     frame = None
@@ -580,7 +610,7 @@ def capture():
 
 
 @app.route("/success/<filename>")
-@login_required
+@teacher_login_required
 def success(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -590,7 +620,7 @@ def success(filename):
 
 
 @app.route("/submit_info", methods=["POST"])
-@login_required
+@teacher_login_required
 def submit_info():
     global filename
     try:
@@ -667,7 +697,7 @@ def submit_info():
 
 
 @app.route("/recognize", methods=["GET", "POST"])
-@login_required
+@teacher_login_required
 def recognize():
     global detection
     frame = current_frame
@@ -691,7 +721,7 @@ def recognize():
 
 
 @app.route("/select_class", methods=["GET", "POST"])
-@login_required
+@teacher_login_required
 def select_class():
     if request.method == "POST":
 
@@ -746,6 +776,8 @@ def student_login():
     if matching_student:
         if check_password_hash(matching_student["password"], password):
             session["logged_in"] = True
+            session["student_logged_in"] = True
+            session.pop("teacher_logged_in", None)
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             flash("Incorrect password")
@@ -758,7 +790,7 @@ def student_login():
 
 
 @app.route("/student_dashboard/<roll_number>")
-@login_required
+@student_login_required
 def student_dashboard(roll_number):
 
     ref = db.reference("Students")
@@ -784,19 +816,19 @@ def student_dashboard(roll_number):
 
 
 @app.route("/mark_out")
-@login_required
+@teacher_login_required
 def mark_out():
     return render_template("mark_out.html",now=datetime.now())
 
 
 @app.route("/mark_in")
-@login_required
+@teacher_login_required
 def mark_in():
     return render_template("mark_in.html",now=datetime.now())
 
 
 @app.route("/view_out_students")
-@login_required
+@teacher_login_required
 def view_out_students():
     try:
 
@@ -814,7 +846,7 @@ def view_out_students():
 
 
 @app.route("/submit_outpass_request", methods=["POST"])
-@login_required
+@student_login_required
 def submit_outpass_request():
     name = request.form.get("name")
     roll_number = request.form.get("rollNumber")
@@ -842,7 +874,7 @@ def submit_outpass_request():
 
 
 @app.route("/admin_review")
-@login_required
+@teacher_login_required
 def admin_review():
     outpass_requests_ref = db.reference("Outpass Requests")
     outpass_requests = outpass_requests_ref.get()
@@ -871,7 +903,7 @@ def admin_review():
 
 
 @app.route("/update_request_status", methods=["POST"])
-@login_required
+@teacher_login_required
 def update_request_status():
     request_id = request.form.get("id")
     status = request.form.get("status")
@@ -888,7 +920,7 @@ def register():
 
 
 @app.route("/view_history")
-@login_required
+@teacher_login_required
 def view_history():
     history_ref = db.reference("History")
     history_data = history_ref.get()  # Fetch data from Firebase
