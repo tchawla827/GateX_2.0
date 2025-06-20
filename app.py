@@ -7,6 +7,7 @@ from flask import (
     url_for,
     flash,
     jsonify,
+    session,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -65,6 +66,11 @@ app.jinja_env.globals.update(url_for=url_for)
 app.secret_key = os.environ.get("SECRET_KEY", "123456")
 socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
+
+
+@app.context_processor
+def inject_logged_in():
+    return {"logged_in": session.get("logged_in")}
 
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -169,8 +175,9 @@ def login():
 
 @app.route("/logout")
 def logout():
+    session.pop("logged_in", None)
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
     )
 
 @app.route("/home")
@@ -195,6 +202,7 @@ def teacher_login():
         password = request.form.get("password")
 
         if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
+            session["logged_in"] = True
             return redirect(url_for("home"))
         else:
             flash("Incorrect credentials")
@@ -203,7 +211,7 @@ def teacher_login():
             "teacher_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
         )
 
-    return render_template("teacher_login.html,now=datetime.now()")
+    return render_template("teacher_login.html", now=datetime.now())
 
 
 @app.route("/upload", methods=["POST"])
@@ -713,6 +721,7 @@ def student_login():
 
     if matching_student:
         if check_password_hash(matching_student["password"], password):
+            session["logged_in"] = True
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             flash("Incorrect password")
