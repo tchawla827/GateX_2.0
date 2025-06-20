@@ -80,7 +80,7 @@ pyparsing==3.2.3
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
-PyYAML==6.0.2
+python-dotenv==1.0.1
 requests==2.32.4
 retina-face==0.0.17
 rich==14.0.0
