@@ -27,23 +27,17 @@ import cloudinary.uploader
 import cloudinary.api
 from detection.face_matching import detect_faces, align_face
 from detection.face_matching import extract_features, match_face
-from utils.configuration import load_yaml
+from utils import load_env
 
 from jinja2 import Environment, select_autoescape
 
 
 
-config_file_path = load_yaml("configs/database.yaml")
+load_env()
 
-TEACHER_PASSWORD_HASH = os.environ.get(
-    "TEACHER_PASSWORD_HASH",
-    config_file_path["teacher"].get("password_hash"),
-)
+TEACHER_PASSWORD_HASH = os.environ.get("TEACHER_PASSWORD_HASH")
 
-cred_json = os.environ.get(
-    "FIREBASE_CREDENTIALS_JSON",
-    config_file_path["firebase"].get("serviceAccountJson"),
-)
+cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON")
 cred_info = json.loads(cred_json or "{}")
 # Support service account JSON with escaped newlines in the private key
 if "private_key" in cred_info:
@@ -52,26 +46,14 @@ cred = credentials.Certificate(cred_info)
 firebase_admin.initialize_app(
     cred,
     {
-        "databaseURL": os.environ.get(
-            "FIREBASE_DB_URL",
-            config_file_path["firebase"].get("databaseURL"),
-        )
+        "databaseURL": os.environ.get("FIREBASE_DB_URL")
     },
 )
 
 cloudinary.config(
-    cloud_name=os.environ.get(
-        "CLOUDINARY_CLOUD_NAME",
-        config_file_path["cloudinary"].get("cloud_name"),
-    ),
-    api_key=os.environ.get(
-        "CLOUDINARY_API_KEY",
-        config_file_path["cloudinary"].get("api_key"),
-    ),
-    api_secret=os.environ.get(
-        "CLOUDINARY_API_SECRET",
-        config_file_path["cloudinary"].get("api_secret"),
-    ),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
 )
 
 app = Flask(__name__, template_folder="template", static_folder="static")
