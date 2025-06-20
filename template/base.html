@@ -101,6 +101,9 @@
         function hideLoading() {
             document.getElementById('loading-overlay').classList.add('hidden');
         }
+
+        // Ensure the overlay is hidden once the page is fully loaded
+        document.addEventListener('DOMContentLoaded', hideLoading);
     </script>
 
     <!-- Additional scripts block -->
