@@ -182,7 +182,7 @@ The key dependencies include:
 - **Werkzeug**
 - **DeepFace**
 - **Dlib**
-- **PyYAML** (included in `requirements.txt`)
+- **python-dotenv** (included in `requirements.txt`)
 
 Install all dependencies using:
 
