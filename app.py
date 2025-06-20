@@ -915,6 +915,7 @@ def update_request_status():
 
 
 @app.route("/register")
+@teacher_login_required
 def register():
     return render_template("register.html",now=datetime.now())
 
