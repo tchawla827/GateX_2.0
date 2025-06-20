@@ -42,8 +42,12 @@
                     </span>
                 </a>
                 <nav class="hidden md:flex space-x-6">
+                    {% if logged_in %}
+                    <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">Logout</a>
+                    {% else %}
                     <a href="{{ url_for('mark_in') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">Mark Entry</a>
                     <a href="{{ url_for('register') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">Register</a>
+                    {% endif %}
                 </nav>
             </div>
         </header>
