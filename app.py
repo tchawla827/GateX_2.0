@@ -164,13 +164,13 @@ def match_with_database(img, database):
 @app.route("/")
 def login():
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages
+        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
     )
 
 @app.route("/logout")
 def logout():
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages
+        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
     )
 
 @app.route("/home")
@@ -180,12 +180,12 @@ def home():
 
 @app.route("/try")
 def test():
-    return render_template("try.html")  # Create a basic test.html template to test url_for
+    return render_template("try.html",now=datetime.now())  # Create a basic test.html template to test url_for
 
 
 @app.route("/add_info")
 def add_info():
-    return render_template("add_info.html")
+    return render_template("add_info.html",now=datetime.now())
 
 
 @app.route("/teacher_login", methods=["GET", "POST"])
@@ -200,10 +200,10 @@ def teacher_login():
             flash("Incorrect credentials")
 
         return render_template(
-            "teacher_login.html", get_flashed_messages=get_flashed_messages
+            "teacher_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
         )
 
-    return render_template("teacher_login.html")
+    return render_template("teacher_login.html,now=datetime.now()")
 
 
 @app.route("/upload", methods=["POST"])
@@ -691,7 +691,7 @@ def select_class():
                     return f'<h2>Student not in class - {detection}</h2><img src="{url}" alt="Recognized face">'
     else:
 
-        return render_template("select_class.html")
+        return render_template("select_class.html",now=datetime.now())
 
 
 @app.route("/student_login", methods=["POST"])
@@ -720,7 +720,7 @@ def student_login():
         flash("Student ID not found")
 
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages
+        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
     )
 
 
@@ -745,7 +745,7 @@ def student_dashboard(roll_number):
             request_list.append(value)
 
     return render_template(
-        "student_dashboard.html", student=student, requests=request_list
+        "student_dashboard.html", student=student, requests=request_list,now=datetime.now()
     )
 
 
@@ -756,7 +756,7 @@ def mark_out():
 
 @app.route("/mark_in")
 def mark_in():
-    return render_template("mark_in.html")
+    return render_template("mark_in.html",now=datetime.now())
 
 
 @app.route("/view_out_students")
@@ -770,7 +770,7 @@ def view_out_students():
         if out_students is None:
             out_students = {}
 
-        return render_template("view_out_students.html", out_students=out_students)
+        return render_template("view_out_students.html", out_students=out_students,now=datetime.now())
     except Exception as e:
 
         return f"An error occurred: {str(e)}"
@@ -828,7 +828,7 @@ def admin_review():
     for req_item in request_list:
         req_item.pop("outgoing_datetime", None)
 
-    return render_template("admin_review.html", requests=request_list)
+    return render_template("admin_review.html", requests=request_list,now=datetime.now())
 
 
 @app.route("/update_request_status", methods=["POST"])
@@ -844,7 +844,7 @@ def update_request_status():
 
 @app.route("/register")
 def register():
-    return render_template("register.html")
+    return render_template("register.html",now=datetime.now())
 
 
 @app.route("/view_history")
@@ -855,7 +855,7 @@ def view_history():
     if history_data is None:
         history_data = {}  # Initialize as an empty dictionary if no history
 
-    return render_template("view_history.html", history=history_data)
+    return render_template("view_history.html", history=history_data,now=datetime.now())
 
 
 
