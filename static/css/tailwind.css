@@ -1058,6 +1058,14 @@ select {
   right: 1.5rem;
 }
 
+.left-0 {
+  left: 0px;
+}
+
+.top-0 {
+  top: 0px;
+}
+
 .z-50 {
   z-index: 50;
 }
@@ -1198,6 +1206,10 @@ select {
 
 .h-auto {
   height: auto;
+}
+
+.h-96 {
+  height: 24rem;
 }
 
 .min-h-screen {
@@ -1595,6 +1607,14 @@ select {
   padding-bottom: 0.25rem;
 }
 
+.pb-6 {
+  padding-bottom: 1.5rem;
+}
+
+.pt-\[100\%\] {
+  padding-top: 100%;
+}
+
 .text-left {
   text-align: left;
 }
@@ -1830,6 +1850,12 @@ select {
   transition-duration: 150ms;
 }
 
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .duration-200 {
   transition-duration: 200ms;
 }
@@ -1900,6 +1926,12 @@ select {
 .file\:text-white::file-selector-button {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.hover\:scale-105:hover {
+  --tw-scale-x: 1.05;
+  --tw-scale-y: 1.05;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .hover\:bg-primary-600:hover {
@@ -2085,6 +2117,12 @@ select {
   color: rgb(56 189 248 / var(--tw-text-opacity, 1));
 }
 
+@media (min-width: 640px) {
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 768px) {
   .md\:flex {
     display: flex;
@@ -2100,6 +2138,10 @@ select {
 
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
