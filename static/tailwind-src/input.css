@@ -53,8 +53,17 @@
   }
 
   .alert-error {
-    @apply p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg 
+    @apply p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg
            dark:bg-red-900 dark:text-red-100;
+  }
+
+  /* Loader */
+  .spinner {
+    @apply w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin;
+  }
+
+  .loading-overlay {
+    @apply fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50;
   }
 }
 

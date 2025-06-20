@@ -57,6 +57,7 @@
 {% block scripts %}
 <script>
     document.getElementById('capture-button').addEventListener('click', function () {
+        showLoading();
         const video = document.getElementById('video');
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
@@ -78,7 +79,7 @@
             }
         }).catch(() => {
             alert('An error occurred while processing the request.');
-        });
+        }).finally(() => hideLoading());
     });
 </script>
 
