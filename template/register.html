@@ -67,6 +67,7 @@
     const addInfoUrl = "{{ url_for('add_info') }}";
 
     document.getElementById('capture-button').addEventListener('click', function() {
+        showLoading();
         const video = document.getElementById('video');
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
@@ -83,7 +84,7 @@
             if (response.status === 200) {
                 window.location.href = addInfoUrl;
             }
-        });
+        }).finally(() => hideLoading());
     });
 </script>
 
