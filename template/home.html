@@ -1,203 +1,114 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <!-- Basic -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/x-icon">
+{% block title %}Gate Pass Dashboard{% endblock %}
 
-  <title> Gate Pass IIITA </title>
-
-  <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}" />
-
-  <!-- Fonts style -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-  <!-- Owl slider stylesheet -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-
-  <!-- Font Awesome style -->
-  <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet" />
-
-  <!-- Custom styles for this template -->
-  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
-  
-  <!-- Responsive style -->
-  <link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet" />
-
-</head>
-
-<body>
-
-  <!-- Header section starts -->
-  <header class="header_section">
-    <div class="container-fluid">
-      <nav class="navbar navbar-expand-lg custom_nav-container">
-        <a class="navbar-brand" href="{{ url_for('home') }}">
-          <span>Gate Pass</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class=""> </span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav">
-            <li class="nav-item active">
-              <a class="nav-link" href="{{ url_for('home') }}">Dashboard <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('logout') }}"> <i class="fa fa-user" aria-hidden="true"></i> Logout</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+{% block content %}
+  <!-- Admin Banner (replaces marquee) -->
+  <div class="bg-primary-100 dark:bg-primary-900 py-3 px-4 mb-8">
+    <div class="container mx-auto text-center">
+      <p class="text-primary-800 dark:text-primary-200 font-medium animate-pulse">
+        You are logged in as Admin
+      </p>
     </div>
-  </header>
-  <!-- End header section -->
+  </div>
 
-  <marquee behavior="scroll" direction="left" style="font-weight: bold; font-size: 30px; color: black; padding: 10px;">
-    You are Logged in as Admin
-  </marquee>
+  <!-- Services Section -->
+  <section class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-surface-800 dark:text-surface-100 mb-2">
+        Services
+      </h2>
+      <div class="w-24 h-1 bg-primary-500 mx-auto"></div>
+    </div>
 
-  <!-- Service section -->
-  <section class="service_section layout_padding">
-    <div class="service_container">
-      <div class="container">
-        <div class="heading_container heading_center">
-          <h2>
-            <span>Services</span>
-          </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Service 1: Mark Out -->
+      <a href="{{ url_for('mark_out') }}" class="card hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6 flex flex-col items-center text-center">
+          <img src="{{ url_for('static', filename='images/s1.png') }}" alt="Mark Out" class="h-16 w-16 mb-4">
+          <h3 class="text-xl font-semibold text-surface-800 dark:text-surface-100 mb-2">Mark Out</h3>
+          <p class="text-surface-600 dark:text-surface-300">
+            Record your exit from campus with proper tracking
+          </p>
         </div>
-        <div class="row">
-          <!-- Service 1 -->
-          <div class="col-md-4">
-            <a href="{{ url_for('mark_out') }}">
-              <div class="box">
-                <div class="img-box">
-                  <img src="{{ url_for('static', filename='images/s1.png') }}" alt="">
-                </div>
-                <div class="detail-box">
-                  <h5>Mark Out</h5>
-                </div>
-              </div>
-            </a>
-            <p>This service allows users to mark their exit from the campus, ensuring proper record keeping.</p>
-          </div>
-          <!-- Service 2 -->
-          <div class="col-md-4">
-            <a href="{{ url_for('mark_in') }}">
-              <div class="box">
-                <div class="img-box">
-                  <img src="{{ url_for('static', filename='images/s2.png') }}" alt="">
-                </div>
-                <div class="detail-box">
-                  <h5>Mark In</h5>
-                </div>
-              </div>
-            </a>
-            <p>This service allows users to mark their return to the campus after an absence.</p>
-          </div>
-          <!-- Service 3 -->
-          <div class="col-md-4">
-            <a href="{{ url_for('view_out_students') }}">
-              <div class="box">
-                <div class="img-box">
-                  <img src="{{ url_for('static', filename='images/s3.png') }}" alt="">
-                </div>
-                <div class="detail-box">
-                  <h5>View Out Students</h5>
-                </div>
-              </div>
-            </a>
-            <p>This service provides a view of all students who are currently out of the campus.</p>
-          </div>
-          <!-- Service 4 -->
-          <div class="col-md-4">
-            <a href="{{ url_for('admin_review') }}">
-              <div class="box">
-                <div class="img-box">
-                  <img src="{{ url_for('static', filename='images/s4.png') }}" alt="">
-                </div>
-                <div class="detail-box">
-                  <h5>Review Outpass Requests</h5>
-                </div>
-              </div>
-            </a>
-            <p>This service allows administrators to review and approve or reject outpass requests.</p>
-          </div>
-          <!-- Service 5 -->
-          <div class="col-md-4">
-            <a href="{{ url_for('view_history') }}">
-              <div class="box">
-                <div class="img-box">
-                  <img src="{{ url_for('static', filename='images/s5.png') }}" alt="">
-                </div>
-                <div class="detail-box">
-                  <h5>History</h5>
-                </div>
-              </div>
-            </a>
-            <p>This service shows the history of all past entries and exits from the campus.</p>
-          </div>
-          <!-- Service 6 -->
-          <div class="col-md-4">
-            <a href="{{ url_for('register') }}">
-              <div class="box">
-                <div class="img-box">
-                  <img src="{{ url_for('static', filename='images/s6.png') }}" alt="">
-                </div>
-                <div class="detail-box">
-                  <h5>Register</h5>
-                </div>
-              </div>
-            </a>
-            <p>This service allows new users to register in the system.</p>
-          </div>
+      </a>
+
+      <!-- Service 2: Mark In -->
+      <a href="{{ url_for('mark_in') }}" class="card hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6 flex flex-col items-center text-center">
+          <img src="{{ url_for('static', filename='images/s2.png') }}" alt="Mark In" class="h-16 w-16 mb-4">
+          <h3 class="text-xl font-semibold text-surface-800 dark:text-surface-100 mb-2">Mark In</h3>
+          <p class="text-surface-600 dark:text-surface-300">
+            Record your return to campus after an absence
+          </p>
+        </div>
+      </a>
+
+      <!-- Service 3: View Out Students -->
+      <a href="{{ url_for('view_out_students') }}" class="card hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6 flex flex-col items-center text-center">
+          <img src="{{ url_for('static', filename='images/s3.png') }}" alt="View Out Students" class="h-16 w-16 mb-4">
+          <h3 class="text-xl font-semibold text-surface-800 dark:text-surface-100 mb-2">View Out Students</h3>
+          <p class="text-surface-600 dark:text-surface-300">
+            See all students currently outside campus
+          </p>
+        </div>
+      </a>
+
+      <!-- Service 4: Review Outpass Requests -->
+      <a href="{{ url_for('admin_review') }}" class="card hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6 flex flex-col items-center text-center">
+          <img src="{{ url_for('static', filename='images/s4.png') }}" alt="Review Requests" class="h-16 w-16 mb-4">
+          <h3 class="text-xl font-semibold text-surface-800 dark:text-surface-100 mb-2">Review Outpass Requests</h3>
+          <p class="text-surface-600 dark:text-surface-300">
+            Approve or reject student outpass requests
+          </p>
+        </div>
+      </a>
+
+      <!-- Service 5: History -->
+      <a href="{{ url_for('view_history') }}" class="card hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6 flex flex-col items-center text-center">
+          <img src="{{ url_for('static', filename='images/s5.png') }}" alt="History" class="h-16 w-16 mb-4">
+          <h3 class="text-xl font-semibold text-surface-800 dark:text-surface-100 mb-2">History</h3>
+          <p class="text-surface-600 dark:text-surface-300">
+            View complete entry/exit records
+          </p>
+        </div>
+      </a>
+
+      <!-- Service 6: Register -->
+      <a href="{{ url_for('register') }}" class="card hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6 flex flex-col items-center text-center">
+          <img src="{{ url_for('static', filename='images/s6.png') }}" alt="Register" class="h-16 w-16 mb-4">
+          <h3 class="text-xl font-semibold text-surface-800 dark:text-surface-100 mb-2">Register</h3>
+          <p class="text-surface-600 dark:text-surface-300">
+            Add new users to the system
+          </p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-surface-800 dark:bg-surface-900 text-surface-200 py-8 mt-12">
+    <div class="container mx-auto px-4">
+      <h3 class="text-center text-xl font-semibold mb-6">Made By Team Null Pointers</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div>
+          <h4 class="font-medium mb-2">Hridayesh (IIT2023148)</h4>
+          <h4 class="font-medium">Krishika Mehta (IIT2023148)</h4>
+        </div>
+        <div>
+          <h4 class="font-medium mb-2">Lakshay Gurjar (IIT2023148)</h4>
+          <h4 class="font-medium">Tavish Chawla (IIT2023150)</h4>
+        </div>
+        <div>
+          <h4 class="font-medium mb-2">Puravi Mohata (IIT2023150)</h4>
+          <h4 class="font-medium">Keesha Luthra (IIT2023150)</h4>
         </div>
       </div>
     </div>
-  </section>
-  <!-- End service section -->
-
-  <!-- Footer section -->
-  <section class="footer_section" style="background-color: #002f6c; width: 100%; padding: 20px 0 5px;">
-    <div class="container">
-      <pre style="font-family: 'Roboto', sans-serif; color: white; margin: 0; text-align: center; font-size: 18px;">
-Made By Team Null Pointers
-Hridayesh (IIT2023148)                                                                                           Tavish Chawla (IIT2023150)
-Krishika Mehta (IIT2023148)                                                                                   Puravi Mohata (IIT2023150)
-Lakshay Gurjar (IIT2023148)                                                                                   Keesha Luthra (IIT2023150)
-      </pre>
-    </div>
-  </section>
-  <!-- End footer section -->
-
-  <!-- jQuery -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
-  <!-- Popper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <!-- Bootstrap JS -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-  <!-- Owl slider -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-  <!-- Custom JS -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
-  <!-- Google Map -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
-  <!-- End Google Map -->
-
-</body>
-
-</html>
+  </footer>
+{% endblock %}
