@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg bg-primary-500 text-white font-medium 
+           hover:bg-primary-600 focus:ring-2 focus:ring-primary-400 
+           focus:ring-opacity-50 transition-all duration-200 
+           shadow-sm hover:shadow-md disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg bg-secondary-500 text-white font-medium 
+           hover:bg-secondary-600 focus:ring-2 focus:ring-secondary-400 
+           focus:ring-opacity-50 transition-all duration-200 
+           shadow-sm hover:shadow-md disabled:opacity-50;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-surface-800 rounded-xl shadow-soft 
+           dark:shadow-soft-dark overflow-hidden transition-all 
+           duration-300 hover:shadow-md dark:hover:shadow-lg;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-surface-100 dark:border-surface-700 
+           font-semibold text-lg text-surface-800 dark:text-surface-100;
+  }
+
+  .card-body {
+    @apply p-6 text-surface-600 dark:text-surface-300;
+  }
+
+  /* Forms */
+  .form-label {
+    @apply block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-surface-300 dark:border-surface-600 
+           rounded-lg bg-white dark:bg-surface-700 text-surface-800 
+           dark:text-surface-100 focus:ring-2 focus:ring-primary-500 
+           focus:border-transparent transition-all duration-200;
+  }
+
+  /* Alerts */
+  .alert-success {
+    @apply p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg 
+           dark:bg-green-900 dark:text-green-100;
+  }
+
+  .alert-error {
+    @apply p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg 
+           dark:bg-red-900 dark:text-red-100;
+  }
+}
+
+@layer utilities {
+  /* Custom utilities */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
