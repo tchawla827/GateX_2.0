@@ -1,9 +1,0 @@
-teacher:
-  password_hash: ${TEACHER_PASSWORD_HASH}
-firebase:
-  databaseURL: ${FIREBASE_DB_URL}
-  serviceAccountJson: ${FIREBASE_CREDENTIALS_JSON}
-cloudinary:
-  cloud_name: ${CLOUDINARY_CLOUD_NAME}
-  api_key: ${CLOUDINARY_API_KEY}
-  api_secret: ${CLOUDINARY_API_SECRET}
