@@ -1,366 +1,211 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <!-- Basic -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="images/favicon.png" type="">
+{% block title %}Our Team{% endblock %}
 
-  <title> IIITA </title>
-
-  <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
-
-  <!-- fonts style -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-  <!--owl slider stylesheet -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-
-  <!-- font awesome style -->
-  <link href="css/font-awesome.min.css" rel="stylesheet" />
-
-  <!-- Custom styles for this template -->
-  <link href="css/style.css" rel="stylesheet" />
-  <!-- responsive style -->
-  <link href="css/responsive.css" rel="stylesheet" />
-
-</head>
-
-<body class="sub_page">
-
-  <div class="hero_area">
-
-    <div class="hero_bg_box">
-      <div class="bg_img_box">
-        <img src="images/hero-bg.png" alt="">
-      </div>
+{% block content %}
+<div class="relative">
+  <!-- Hero Section -->
+  <div class="relative h-96 bg-surface-800 overflow-hidden">
+    <div class="absolute inset-0">
+      <img src="{{ url_for('static', filename='images/hero-bg.png') }}" alt="Background" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-black bg-opacity-50"></div>
     </div>
-
-    <!-- header section strats -->
-    <header class="header_section">
-      <div class="container-fluid">
-        <nav class="navbar navbar-expand-lg custom_nav-container ">
-          <a class="navbar-brand" href="index.html">
-            <span>
-              IIITA
-            </span>
-          </a>
-
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class=""> </span>
-          </button>
-
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav  ">
-              <li class="nav-item ">
-                <a class="nav-link" href="index.html">Home </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="about.html"> About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="service.html">Services</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="why.html">Why Us</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="team.html">Team <span class="sr-only">(current)</span> </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"> <i class="fa fa-user" aria-hidden="true"></i> Login</a>
-              </li>
-              <form class="form-inline">
-                <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
-                  <i class="fa fa-search" aria-hidden="true"></i>
-                </button>
-              </form>
-            </ul>
-          </div>
-        </nav>
-      </div>
-    </header>
-    <!-- end header section -->
+    <div class="relative z-10 flex flex-col justify-center h-full px-4">
+      <h1 class="text-4xl font-bold text-center text-white mb-4">Our Team</h1>
+      <p class="text-xl text-center text-surface-200">Meet the talented individuals behind our project</p>
+    </div>
   </div>
 
-  <!-- team section -->
-  <section class="team_section layout_padding"></section>
-    <div class="container-fluid">
-      <div class="heading_container heading_center">
-        <h2 class="">
-          Our <span> Team</span>
-        </h2>
-      </div>
+  <!-- Team Section -->
+  <section class="py-16 px-4">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center text-surface-800 dark:text-surface-100 mb-12">
+        Our <span class="text-gradient bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">Team</span>
+      </h2>
 
-      <div class="team_container">
-        <div class="row">
-          <div class="col-lg-3 col-sm-6">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/team-1.jpg" class="img1" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Lakshya Gurjar
-                </h5>
-                <p>
-                  IIT2023161
-                </p>
-              </div>
-              <div class="social_box">
-                <a href="#">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-instagram" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-youtube-play" aria-hidden="true"></i>
-                </a>
-              </div>
-            </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Team Member 1 -->
+        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
+          <div class="relative pt-[100%] overflow-hidden">
+            <img src="{{ url_for('static', filename='images/team-1.jpg') }}" alt="Lakshya Gurjar" 
+                 class="absolute top-0 left-0 w-full h-full object-cover">
           </div>
-          <div class="col-lg-3 col-sm-6">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/team-2.jpg" class="img1" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Tavish Chawla
-                </h5>
-                <p>
-                  IIT2023150
-                </p>
-              </div>
-              <div class="social_box">
-                <a href="#">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-instagram" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-youtube-play" aria-hidden="true"></i>
-                </a>
-              </div>
-            </div>
+          <div class="p-6 text-center">
+            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Lakshya Gurjar</h3>
+            <p class="text-surface-600 dark:text-surface-300">IIT2023161</p>
           </div>
-          <div class="col-lg-3 col-sm-6">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/team-3.jpg" class="img1" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Krishika Mehta
-                </h5>
-                <p>
-                  IIT2023
-                </p>
-              </div>
-              <div class="social_box">
-                <a href="#">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-instagram" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-youtube-play" aria-hidden="true"></i>
-                </a>
-              </div>
-            </div>
+          <div class="flex justify-center space-x-4 pb-6">
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
           </div>
-          <div class="col-lg-3 col-sm-6">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/team-4.jpg" class="img1" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Puravi Mohata
-                </h5>
-                <p>
-                  IIT2023
-                </p>
-              </div>
-              <div class="social_box">
-                <a href="#">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-instagram" aria-hidden="true"></i>
-                </a>
-                <a href="#">
-                  <i class="fa fa-youtube-play" aria-hidden="true"></i>
-                </a>
-              </div>
-            </div>
+        </div>
+
+        <!-- Team Member 2 -->
+        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
+          <div class="relative pt-[100%] overflow-hidden">
+            <img src="{{ url_for('static', filename='images/team-2.jpg') }}" alt="Tavish Chawla" 
+                 class="absolute top-0 left-0 w-full h-full object-cover">
+          </div>
+          <div class="p-6 text-center">
+            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Tavish Chawla</h3>
+            <p class="text-surface-600 dark:text-surface-300">IIT2023150</p>
+          </div>
+          <div class="flex justify-center space-x-4 pb-6">
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Team Member 3 -->
+        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
+          <div class="relative pt-[100%] overflow-hidden">
+            <img src="{{ url_for('static', filename='images/team-3.jpg') }}" alt="Krishika Mehta" 
+                 class="absolute top-0 left-0 w-full h-full object-cover">
+          </div>
+          <div class="p-6 text-center">
+            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Krishika Mehta</h3>
+            <p class="text-surface-600 dark:text-surface-300">IIT2023</p>
+          </div>
+          <div class="flex justify-center space-x-4 pb-6">
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Team Member 4 -->
+        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
+          <div class="relative pt-[100%] overflow-hidden">
+            <img src="{{ url_for('static', filename='images/team-4.jpg') }}" alt="Puravi Mohata" 
+                 class="absolute top-0 left-0 w-full h-full object-cover">
+          </div>
+          <div class="p-6 text-center">
+            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Puravi Mohata</h3>
+            <p class="text-surface-600 dark:text-surface-300">IIT2023</p>
+          </div>
+          <div class="flex justify-center space-x-4 pb-6">
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- end team section -->
 
-  <!-- info section -->
+  <!-- Info Section -->
+  <section class="bg-surface-100 dark:bg-surface-800 py-16 px-4">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="space-y-4">
+        <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Address</h3>
+        <div class="space-y-2">
+          <div class="flex items-center space-x-2 text-surface-600 dark:text-surface-300">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>IIIT Allahabad, India</span>
+          </div>
+          <div class="flex items-center space-x-2 text-surface-600 dark:text-surface-300">
+            <i class="fas fa-phone"></i>
+            <span>+91 1234567890</span>
+          </div>
+          <div class="flex items-center space-x-2 text-surface-600 dark:text-surface-300">
+            <i class="fas fa-envelope"></i>
+            <span>contact@iiita.ac.in</span>
+          </div>
+        </div>
+        <div class="flex space-x-4">
+          <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+      </div>
 
-  <section class="info_section layout_padding2">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6 col-lg-3 info_col">
-          <div class="info_contact">
-            <h4>
-              Address
-            </h4>
-            <div class="contact_link_box">
-              <a href="">
-                <i class="fa fa-map-marker" aria-hidden="true"></i>
-                <span>
-                  Location
-                </span>
-              </a>
-              <a href="">
-                <i class="fa fa-phone" aria-hidden="true"></i>
-                <span>
-                  Call +01 1234567890
-                </span>
-              </a>
-              <a href="">
-                <i class="fa fa-envelope" aria-hidden="true"></i>
-                <span>
-                  demo@gmail.com
-                </span>
-              </a>
-            </div>
-          </div>
-          <div class="info_social">
-            <a href="">
-              <i class="fa fa-facebook" aria-hidden="true"></i>
-            </a>
-            <a href="">
-              <i class="fa fa-twitter" aria-hidden="true"></i>
-            </a>
-            <a href="">
-              <i class="fa fa-linkedin" aria-hidden="true"></i>
-            </a>
-            <a href="">
-              <i class="fa fa-instagram" aria-hidden="true"></i>
-            </a>
-          </div>
+      <div>
+        <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100 mb-4">Info</h3>
+        <p class="text-surface-600 dark:text-surface-300">
+          A team of talented students from IIIT Allahabad working on innovative solutions for campus management.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100 mb-4">Links</h3>
+        <div class="space-y-2">
+          <a href="{{ url_for('home') }}" class="block text-surface-600 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Home</a>
+          <a href="#" class="block text-surface-600 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">About</a>
+          <a href="#" class="block text-surface-600 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Services</a>
+          <a href="#" class="block text-surface-600 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Team</a>
         </div>
-        <div class="col-md-6 col-lg-3 info_col">
-          <div class="info_detail">
-            <h4>
-              Info
-            </h4>
-            <p>
-              necessary, making this the first true generator on the Internet. It uses a dictionary of over 200  words, combined with a handful
-            </p>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-2 mx-auto info_col">
-          <div class="info_link_box">
-            <h4>
-              Links
-            </h4>
-            <div class="info_links">
-              <a class="active" href="index.html">
-                Home
-              </a>
-              <a class="" href="about.html">
-                About
-              </a>
-              <a class="" href="service.html">
-                Services
-              </a>
-              <a class="" href="why.html">
-                Why Us
-              </a>
-              <a class="" href="team.html">
-                Team
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 info_col ">
-          <h4>
-            Subscribe
-          </h4>
-          <form action="#">
-            <input type="text" placeholder="Enter email" />
-            <button type="submit">
-              Subscribe
-            </button>
-          </form>
-        </div>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100 mb-4">Subscribe</h3>
+        <form class="space-y-4">
+          <input type="email" placeholder="Enter email" class="form-input w-full">
+          <button type="submit" class="btn-primary w-full">Subscribe</button>
+        </form>
       </div>
     </div>
   </section>
+</div>
 
-  <!-- end info section -->
+<!-- Footer -->
+<footer class="bg-surface-800 dark:bg-surface-900 text-surface-400 py-8 text-center">
+  <div class="container mx-auto px-4">
+    <p>&copy; <span id="currentYear"></span> All Rights Reserved By Team Null Pointers</p>
+  </div>
+</footer>
 
-  <!-- footer section -->
-  <section class="footer_section">
-    <div class="container">
-      <p>
-        &copy; <span id="displayYear"></span> All Rights Reserved By
-        <a href="https://html.design/">Team Null Pointers</a>
-      </p>
-    </div>
-  </section>
-  <!-- footer section -->
+<script>
+  // Set current year in footer
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
 
-  <!-- jQery -->
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-  <!-- popper js -->
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-  </script>
-  <!-- bootstrap js -->
-  <script type="text/javascript" src="js/bootstrap.js"></script>
-  <!-- owl slider -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
-  </script>
-  <!-- custom js -->
-  <script type="text/javascript" src="js/custom.js"></script>
-  <!-- Google Map -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
-  </script>
-  <!-- End Google Map -->
-
-</body>
-
-</html>
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}
