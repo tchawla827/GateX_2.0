@@ -1,161 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Review</title>
+{% block title %}Admin Review{% endblock %}
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}" />
-    <!-- Fonts style -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome style -->
-    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet" />
-    <!-- Custom styles for this template -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
-    <!-- Responsive style -->
-    <link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet" />
+{% block content %}
+<div class="container mx-auto px-4 py-8 flex-grow">
+    <h1 class="text-3xl font-bold text-surface-800 dark:text-surface-100 mb-8">Outpass Requests Review</h1>
 
-    <style>
-        /* Ensure the footer is at the bottom */
-        body, html {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        .content {
-            flex: 1;
-        }
-
-        .footer_section {
-            background-color: #002f6c;
-            width: 100%;
-            padding: 20px 0 5px;
-            color: white;
-            text-align: center;
-            font-size: 18px;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Header section starts -->
-    <header class="header_section">
-        <div class="container-fluid">
-            <nav class="navbar navbar-expand-lg custom_nav-container">
-                <a class="navbar-brand" href="{{ url_for('home') }}">
-                    <span>Gate Pass</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class=""> </span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('home') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}"><i class="fa fa-user" aria-hidden="true"></i> Logout</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </header>
-    <!-- End header section -->
-
-    <!-- Outpass Request Review Section -->
-    <section class="dashboard_section layout_padding content">
-        <div class="container">
-            <h1>Outpass Requests Review</h1>
-
-            <!-- Wrap table in a responsive div -->
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Roll Number</th>
-                            <th>Outgoing Date</th>
-                            <th>Outgoing Time</th>
-                            <th>Ingoing Date</th>
-                            <th>Ingoing Time</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for request in requests %}
-                            <tr>
-                                <td>{{ request.name }}</td>
-                                <td>{{ request.rollNumber }}</td>
-                                <td>{{ request.outgoing_date }}</td>
-                                <td>{{ request.outgoing_time }}</td>
-                                <td>{{ request.ingoing_date }}</td>
-                                <td>{{ request.ingoing_time }}</td>
-                                <td>{{ request.reason }}</td>
-                                <td>{{ request.status }}</td>
-                                <td>
-                                    {% if request.status == 'Pending' %}
-                                        <form action="{{ url_for('update_request_status') }}" method="POST" style="display:inline;">
-                                            <input type="hidden" name="id" value="{{ request.id }}">
-                                            <input type="hidden" name="status" value="Approved">
-                                            <button type="submit" class="btn btn-success">Approve</button>
-                                        </form>
-                                        <form action="{{ url_for('update_request_status') }}" method="POST" style="display:inline;">
-                                            <input type="hidden" name="id" value="{{ request.id }}">
-                                            <input type="hidden" name="status" value="Rejected">
-                                            <button type="submit" class="btn btn-danger">Reject</button>
-                                        </form>
-                                    {% else %}
-                                        {{ request.status }}
-                                    {% endif %}
-                                </td>
-                            </tr>
+    <!-- Responsive table container -->
+    <div class="overflow-x-auto shadow-soft dark:shadow-soft-dark rounded-xl">
+        <table class="min-w-full bg-white dark:bg-surface-800">
+            <thead class="bg-surface-100 dark:bg-surface-700">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Roll Number</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Outgoing Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Outgoing Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Ingoing Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Ingoing Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Reason</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-200 dark:divide-surface-700">
+                {% for request in requests %}
+                <tr class="hover:bg-surface-50 dark:hover:bg-surface-750 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.rollNumber }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.outgoing_date }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.outgoing_time }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.ingoing_date }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.ingoing_time }}</td>
+                    <td class="px-6 py-4 text-sm text-surface-700 dark:text-surface-300">{{ request.reason }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {% if request.status == 'Approved' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                            {% elif request.status == 'Rejected' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                            {% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% endif %}">
+                            {{ request.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">
+                        {% if request.status == 'Pending' %}
+                        <div class="flex space-x-2">
+                            <form action="{{ url_for('update_request_status') }}" method="POST">
+                                <input type="hidden" name="id" value="{{ request.id }}">
+                                <input type="hidden" name="status" value="Approved">
+                                <button type="submit" class="btn-primary bg-green-500 hover:bg-green-600 px-3 py-1 text-sm">
+                                    Approve
+                                </button>
+                            </form>
+                            <form action="{{ url_for('update_request_status') }}" method="POST">
+                                <input type="hidden" name="id" value="{{ request.id }}">
+                                <input type="hidden" name="status" value="Rejected">
+                                <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 px-3 py-1 text-sm">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
                         {% else %}
-                            <tr>
-                                <td colspan="9">No requests found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        {{ request.status }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="px-6 py-4 text-center text-sm text-surface-500 dark:text-surface-400">No requests found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-surface-800 dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700 py-8">
+    <div class="container mx-auto px-4">
+        <h3 class="text-center text-xl font-semibold text-white dark:text-surface-300 mb-6">Made By Team Null Pointers</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center text-white dark:text-surface-400">
+            <div>
+                <h4 class="font-medium">Hridayesh (IIT2023148)</h4>
+                <h4 class="font-medium">Krishika Mehta (IIT2023148)</h4>
+            </div>
+            <div>
+                <h4 class="font-medium">Lakshay Gurjar (IIT2023148)</h4>
+                <h4 class="font-medium">Tavish Chawla (IIT2023150)</h4>
+            </div>
+            <div>
+                <h4 class="font-medium">Puravi Mohata (IIT2023150)</h4>
+                <h4 class="font-medium">Keesha Luthra (IIT2023150)</h4>
             </div>
         </div>
-    </section>
-    <!-- End Outpass Request Review Section -->
-
-    <!-- Footer section -->
-    <section class="footer_section">
-        <div class="container">
-            <pre style="font-family: 'Roboto', sans-serif; color: white; margin: 0; text-align: center; font-size: 18px;">
-Made By Team Null Pointers
-Hridayesh (IIT2023148)                                                                                           Tavish Chawla (IIT2023150)
-Krishika Mehta (IIT2023148)                                                                                   Puravi Mohata (IIT2023150)
-Lakshay Gurjar (IIT2023148)                                                                                   Keesha Luthra (IIT2023150)
-            </pre>
-        </div>
-    </section>
-    <!-- End footer section -->
-
-    <!-- jQuery -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
-    <!-- Popper js -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-    </script>
-    <!-- Bootstrap js -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-    <!-- Custom js -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
-</body>
-
-</html>
+    </div>
+</footer>
+{% endblock %}
