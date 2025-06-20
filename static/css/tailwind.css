@@ -2171,4 +2171,4 @@ select {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-.loading-overlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background-color:rgba(0,0,0,.5);z-index:50}.spinner{width:2rem;height:2rem;border-width:4px;border-style:solid;border-color:#0ea5e9;border-top-color:transparent;border-radius:9999px;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(1turn)}}
+.loading-overlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background-color:rgba(0,0,0,.5);z-index:50}.loading-overlay.hidden{display:none}.spinner{width:2rem;height:2rem;border-width:4px;border-style:solid;border-color:#0ea5e9;border-top-color:transparent;border-radius:9999px;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(1turn)}}
