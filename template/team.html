@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Our Team{% endblock %}
+{% block title %}Developer{% endblock %}
 
 {% block content %}
 <div class="relative">
@@ -11,8 +11,8 @@
       <div class="absolute inset-0 bg-black bg-opacity-50"></div>
     </div>
     <div class="relative z-10 flex flex-col justify-center h-full px-4">
-      <h1 class="text-4xl font-bold text-center text-white mb-4">Our Team</h1>
-      <p class="text-xl text-center text-surface-200">Meet the talented individuals behind our project</p>
+      <h1 class="text-4xl font-bold text-center text-white mb-4">Developer</h1>
+      <p class="text-xl text-center text-surface-200">Get to know the creator of the project</p>
     </div>
   </div>
 
@@ -20,97 +20,18 @@
   <section class="py-16 px-4">
     <div class="container mx-auto">
       <h2 class="text-3xl font-bold text-center text-surface-800 dark:text-surface-100 mb-12">
-        Our <span class="text-gradient bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">Team</span>
+        The <span class="text-gradient bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">Developer</span>
       </h2>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        <!-- Team Member 1 -->
+      <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-8">
         <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
           <div class="relative pt-[100%] overflow-hidden">
-            <img src="{{ url_for('static', filename='images/team-1.jpg') }}" alt="Lakshya Gurjar" 
-                 class="absolute top-0 left-0 w-full h-full object-cover">
-          </div>
-          <div class="p-6 text-center">
-            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Lakshya Gurjar</h3>
-            <p class="text-surface-600 dark:text-surface-300">IIT2023161</p>
-          </div>
-          <div class="flex justify-center space-x-4 pb-6">
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- Team Member 2 -->
-        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
-          <div class="relative pt-[100%] overflow-hidden">
-            <img src="{{ url_for('static', filename='images/team-2.jpg') }}" alt="Tavish Chawla" 
+            <img src="{{ url_for('static', filename='images/team-2.jpg') }}" alt="Tavish Chawla"
                  class="absolute top-0 left-0 w-full h-full object-cover">
           </div>
           <div class="p-6 text-center">
             <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Tavish Chawla</h3>
             <p class="text-surface-600 dark:text-surface-300">IIT2023150</p>
-          </div>
-          <div class="flex justify-center space-x-4 pb-6">
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- Team Member 3 -->
-        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
-          <div class="relative pt-[100%] overflow-hidden">
-            <img src="{{ url_for('static', filename='images/team-3.jpg') }}" alt="Krishika Mehta" 
-                 class="absolute top-0 left-0 w-full h-full object-cover">
-          </div>
-          <div class="p-6 text-center">
-            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Krishika Mehta</h3>
-            <p class="text-surface-600 dark:text-surface-300">IIT2023</p>
-          </div>
-          <div class="flex justify-center space-x-4 pb-6">
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- Team Member 4 -->
-        <div class="card overflow-hidden transition-transform duration-300 hover:scale-105">
-          <div class="relative pt-[100%] overflow-hidden">
-            <img src="{{ url_for('static', filename='images/team-4.jpg') }}" alt="Puravi Mohata" 
-                 class="absolute top-0 left-0 w-full h-full object-cover">
-          </div>
-          <div class="p-6 text-center">
-            <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100">Puravi Mohata</h3>
-            <p class="text-surface-600 dark:text-surface-300">IIT2023</p>
           </div>
           <div class="flex justify-center space-x-4 pb-6">
             <a href="#" class="text-surface-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
@@ -169,7 +90,7 @@
       <div>
         <h3 class="text-xl font-bold text-surface-800 dark:text-surface-100 mb-4">Info</h3>
         <p class="text-surface-600 dark:text-surface-300">
-          A team of talented students from IIIT Allahabad working on innovative solutions for campus management.
+          A developer from IIIT Allahabad building innovative solutions for campus management.
         </p>
       </div>
 
@@ -197,7 +118,7 @@
 <!-- Footer -->
 <footer class="bg-surface-800 dark:bg-surface-900 text-surface-400 py-8 text-center">
   <div class="container mx-auto px-4">
-    <p>&copy; <span id="currentYear"></span> All Rights Reserved By Team Null Pointers</p>
+    <p>&copy; <span id="currentYear"></span> All Rights Reserved By Tavish Chawla</p>
   </div>
 </footer>
 
