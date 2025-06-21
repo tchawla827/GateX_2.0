@@ -50,6 +50,8 @@
                         <input type="time" name="ingoing_time" required class="form-input">
                     </div>
                 </div>
+
+                <div id="datetime-error" class="text-red-500 text-sm"></div>
                 
                 <div>
                     <label class="form-label">Reason for Going Out</label>
@@ -116,4 +118,8 @@
         <h3 class="text-center text-xl font-semibold text-white dark:text-surface-300 mb-6">Developed by Tavish Chawla</h3>
     </div>
 </footer>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
 {% endblock %}

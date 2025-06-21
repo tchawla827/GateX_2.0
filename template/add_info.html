@@ -36,6 +36,7 @@
                 <div>
                     <input type="tel" name="phone" placeholder="Enter your phone number" pattern="[0-9]{10}" required
                            class="form-input w-full bg-white bg-opacity-80 dark:bg-surface-700 dark:bg-opacity-80 border-white border-opacity-30 dark:border-surface-600 placeholder-surface-500 dark:placeholder-surface-400 text-surface-800 dark:text-surface-100">
+                    <p id="phone-error" class="text-red-500 text-sm"></p>
                 </div>
                 
                 <div>
@@ -69,4 +70,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
 {% endblock %}
