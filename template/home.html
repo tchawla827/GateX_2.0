@@ -12,6 +12,12 @@
     </div>
   </div>
 
+  <!-- Real-time Status Updates -->
+  <section class="container mx-auto px-4 py-4">
+    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-100 mb-4">Recent Activity</h2>
+    <ul id="status-feed" class="space-y-2"></ul>
+  </section>
+
   <!-- Services Section -->
   <section class="container mx-auto px-4 py-8">
     <div class="text-center mb-12">
@@ -96,4 +102,21 @@
       <h3 class="text-center text-xl font-semibold mb-6">Developed by Tavish Chawla</h3>
     </div>
   </footer>
+
+{% block scripts %}
+  <script type="module">
+    import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
+    const socket = io();
+    const feed = document.getElementById('status-feed');
+    socket.on('status_update', data => {
+      const li = document.createElement('li');
+      li.textContent = `${data.time}: ${data.name} marked ${data.status}`;
+      feed.prepend(li);
+      if (feed.children.length > 5) {
+        feed.removeChild(feed.lastChild);
+      }
+    });
+  </script>
+{% endblock %}
+
 {% endblock %}
