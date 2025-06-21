@@ -325,6 +325,17 @@ def markin():
                     history_ref.child(latest_entry_key).update({"time_in": str(datetime.now())})
                     print(f"Updated history for {student_name} with time_in.")
 
+                # Notify clients about the status change
+                socketio.emit(
+                    "status_update",
+                    {
+                        "name": student_name,
+                        "status": "in",
+                        "time": str(datetime.now()),
+                    },
+                    broadcast=True,
+                )
+
                 return {
                     "status": "success",
                     "message": f"{student_name} has been marked in successfully!",
@@ -493,6 +504,17 @@ def markout():
                     "time_out": str(datetime.now()),
                     "time_in": None,  # Will update this when marking in
                 }
+            )
+
+            # Notify clients about the status change
+            socketio.emit(
+                "status_update",
+                {
+                    "name": student_name,
+                    "status": "out",
+                    "time": str(datetime.now()),
+                },
+                broadcast=True,
             )
 
             print("Successfully added student to 'Out Students' and 'History'.")
