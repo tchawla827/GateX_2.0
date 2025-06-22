@@ -13,14 +13,20 @@
                         Gate Pass
                     </span>
                 </a>
-                <nav class="hidden md:flex space-x-6">
-                    <a href="{{ url_for('home') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
+                <button id="nav-toggle" class="md:hidden focus:outline-none" aria-label="Open Menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-surface-600 dark:text-surface-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+
+                <nav id="nav-menu" class="hidden flex-col space-y-4 absolute top-full left-0 w-full bg-white dark:bg-surface-800 md:static md:flex md:flex-row md:space-y-0 md:space-x-6 md:w-auto md:bg-transparent">
+                    <a href="{{ url_for('home') }}" class="px-4 py-2 text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
                         Dashboard
                     </a>
-                    <a href="{{ url_for('home') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
+                    <a href="{{ url_for('home') }}" class="px-4 py-2 text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
                         Home
                     </a>
-                    <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
+                    <a href="{{ url_for('logout') }}" class="px-4 py-2 text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
                         <i class="fas fa-user mr-1"></i> Logout
                     </a>
                 </nav>
