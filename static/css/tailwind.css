@@ -2171,3 +2171,8 @@ select {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+/* Overlay styles */
+.overlay-crosshair{position:absolute;inset:0;border:3px dashed rgba(255,255,255,0.7);border-radius:0.5rem;pointer-events:none;}
+.capture-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);color:white;font-size:1.25rem;font-weight:600;opacity:0;transition:opacity 0.3s ease;pointer-events:none;}
+.capture-status.active{opacity:1;}
+
