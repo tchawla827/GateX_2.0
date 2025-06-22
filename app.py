@@ -64,6 +64,16 @@ app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
 )
 app.jinja_env.globals.update(url_for=url_for)
+
+
+def format_ddmmyyyy(value):
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").strftime("%d-%m-%Y")
+    except Exception:
+        return value
+
+
+app.jinja_env.filters["format_ddmmyyyy"] = format_ddmmyyyy
 app.secret_key = os.environ.get("SECRET_KEY", "123456")
 socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
@@ -275,7 +285,7 @@ def allowed_file(filename):
 
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.now().strftime("%d-%m-%Y_%H%M%S")
 
     url = url_for("static", filename="images/" + filename, v=timestamp)
 
@@ -347,7 +357,7 @@ def markin():
                     latest_entry_key = next(key for key, value in history_entries.items() if value == latest_entry)
 
                     # Update the time_in for the latest entry
-                    history_ref.child(latest_entry_key).update({"time_in": str(datetime.now())})
+                    history_ref.child(latest_entry_key).update({"time_in": datetime.now().strftime("%d-%m-%Y %H:%M:%S")})
                     print(f"Updated history for {student_name} with time_in.")
 
                 return {
@@ -455,7 +465,7 @@ def markout():
                 requests_ref.order_by_child("rollNumber").equal_to(rollNumber).get()
             )
 
-            current_date = datetime.now().date().isoformat()
+            current_date = datetime.now().strftime("%d-%m-%Y")
             has_approved_request = False
             approved_request_key = None
 
@@ -500,7 +510,7 @@ def markout():
                     "rollNumber": rollNumber,
                     "class": student_class,
                     "phone": phoneNumber,  # Store phone number
-                    "time_out": str(datetime.now()),
+                    "time_out": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                     "image_filename": filename,
                 }
             )
@@ -516,7 +526,7 @@ def markout():
                     "name": student_name,
                     "rollNumber": rollNumber,
                     "phone": phoneNumber,  # Include phone number in history
-                    "time_out": str(datetime.now()),
+                    "time_out": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                     "time_in": None,  # Will update this when marking in
                 }
             )
@@ -581,7 +591,7 @@ def capture():
 @app.route("/success/<filename>")
 @login_required("admin")
 def success(filename):
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.now().strftime("%d-%m-%Y_%H%M%S")
 
     url = url_for("static", filename="images/" + filename, v=timestamp)
 
@@ -696,7 +706,7 @@ def select_class():
 
         selected_class = request.form.get("classes")
 
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        timestamp = datetime.now().strftime("%d-%m-%Y_%H%M%S")
         url = url_for("static", filename="recognized/recognized.png", v=timestamp)
 
         ref = db.reference("Students")
@@ -780,7 +790,7 @@ def student_dashboard(roll_number):
             date_str = value.get("outgoing_date")
             time_str = value.get("outgoing_time", "00:00")
             try:
-                sort_dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+            sort_dt = datetime.strptime(f"{date_str} {time_str}", "%d-%m-%Y %H:%M")
             except (TypeError, ValueError):
                 sort_dt = datetime.min
             value["_sort_datetime"] = sort_dt
@@ -837,6 +847,12 @@ def submit_outpass_request():
     outgoing_time = request.form.get("outgoing_time")
     ingoing_date = request.form.get("ingoing_date")
     ingoing_time = request.form.get("ingoing_time")
+
+    # Convert dates to dd-mm-yyyy format
+    if outgoing_date:
+        outgoing_date = datetime.strptime(outgoing_date, "%Y-%m-%d").strftime("%d-%m-%Y")
+    if ingoing_date:
+        ingoing_date = datetime.strptime(ingoing_date, "%Y-%m-%d").strftime("%d-%m-%Y")
     reason = request.form.get("reason")
 
     outpass_request_ref = db.reference("Outpass Requests")
@@ -868,7 +884,7 @@ def admin_review():
             value["id"] = key
             # Convert outgoing_date to a datetime object for sorting, if present
             if "outgoing_date" in value:
-                value["outgoing_datetime"] = datetime.strptime(value["outgoing_date"], "%Y-%m-%d")
+                value["outgoing_datetime"] = datetime.strptime(value["outgoing_date"], "%d-%m-%Y")
             else:
                 value["outgoing_datetime"] = datetime.max  # Use a max date if not present
             request_list.append(value)
