@@ -7,6 +7,7 @@ from flask import (
     url_for,
     flash,
     jsonify,
+    session,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -30,6 +31,7 @@ from detection.face_matching import extract_features, match_face
 from utils import load_env
 
 from jinja2 import Environment, select_autoescape
+from functools import wraps
 
 
 
@@ -68,6 +70,26 @@ current_frame = None
 
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
+def login_required(role=None):
+    """Decorator to require login for specific roles."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            user_role = session.get("user_role")
+            if not user_role:
+                return redirect(url_for("login"))
+            if role and user_role != role:
+                flash("Unauthorized access")
+                if user_role == "admin":
+                    return redirect(url_for("home"))
+                return redirect(
+                    url_for("student_dashboard", roll_number=session.get("roll_number"))
+                )
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 def upload_database(filename):
@@ -169,11 +191,11 @@ def login():
 
 @app.route("/logout")
 def logout():
-    return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
-    )
+    session.clear()
+    return redirect(url_for("login"))
 
 @app.route("/home")
+@login_required("admin")
 def home():
     return render_template("home.html",now=datetime.now())
 
@@ -184,6 +206,7 @@ def test():
 
 
 @app.route("/add_info")
+@login_required("admin")
 def add_info():
     return render_template("add_info.html",now=datetime.now())
 
@@ -195,18 +218,19 @@ def teacher_login():
         password = request.form.get("password")
 
         if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
+            session["user_role"] = "admin"
+            session["teacher_name"] = teacher_name
             return redirect(url_for("home"))
         else:
             flash("Incorrect credentials")
 
-        return render_template(
-            "teacher_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
-        )
-
-    return render_template("teacher_login.html,now=datetime.now()")
+    return render_template(
+        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
+    )
 
 
 @app.route("/upload", methods=["POST"])
+@login_required("admin")
 def upload():
     global filename
 
@@ -261,6 +285,7 @@ def uploaded_file(filename):
 
 
 @app.route("/markin", methods=["POST"])
+@login_required("admin")
 def markin():
     global filename, detection
     frame = None
@@ -346,6 +371,7 @@ def markin():
 
 
 @app.route("/markout", methods=["POST"])
+@login_required("admin")
 def markout():
     global filename, detection
     frame = None
@@ -516,6 +542,7 @@ def markout():
 
 
 @app.route("/capture", methods=["POST"])
+@login_required("admin")
 def capture():
     global filename
     frame = None
@@ -552,6 +579,7 @@ def capture():
 
 
 @app.route("/success/<filename>")
+@login_required("admin")
 def success(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -561,6 +589,7 @@ def success(filename):
 
 
 @app.route("/submit_info", methods=["POST"])
+@login_required("admin")
 def submit_info():
     global filename
     try:
@@ -637,6 +666,7 @@ def submit_info():
 
 
 @app.route("/recognize", methods=["GET", "POST"])
+@login_required("admin")
 def recognize():
     global detection
     frame = current_frame
@@ -660,6 +690,7 @@ def recognize():
 
 
 @app.route("/select_class", methods=["GET", "POST"])
+@login_required("admin")
 def select_class():
     if request.method == "POST":
 
@@ -713,6 +744,8 @@ def student_login():
 
     if matching_student:
         if check_password_hash(matching_student["password"], password):
+            session["user_role"] = "student"
+            session["roll_number"] = student_id
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             flash("Incorrect password")
@@ -725,6 +758,7 @@ def student_login():
 
 
 @app.route("/student_dashboard/<roll_number>")
+@login_required("student")
 def student_dashboard(roll_number):
 
     ref = db.reference("Students")
@@ -750,16 +784,19 @@ def student_dashboard(roll_number):
 
 
 @app.route("/mark_out")
+@login_required("admin")
 def mark_out():
     return render_template("mark_out.html",now=datetime.now())
 
 
 @app.route("/mark_in")
+@login_required("admin")
 def mark_in():
     return render_template("mark_in.html",now=datetime.now())
 
 
 @app.route("/view_out_students")
+@login_required("admin")
 def view_out_students():
     try:
 
@@ -777,6 +814,7 @@ def view_out_students():
 
 
 @app.route("/submit_outpass_request", methods=["POST"])
+@login_required("student")
 def submit_outpass_request():
     name = request.form.get("name")
     roll_number = request.form.get("rollNumber")
@@ -804,6 +842,7 @@ def submit_outpass_request():
 
 
 @app.route("/admin_review")
+@login_required("admin")
 def admin_review():
     outpass_requests_ref = db.reference("Outpass Requests")
     outpass_requests = outpass_requests_ref.get()
@@ -832,6 +871,7 @@ def admin_review():
 
 
 @app.route("/update_request_status", methods=["POST"])
+@login_required("admin")
 def update_request_status():
     request_id = request.form.get("id")
     status = request.form.get("status")
@@ -843,11 +883,13 @@ def update_request_status():
 
 
 @app.route("/register")
+@login_required("admin")
 def register():
     return render_template("register.html",now=datetime.now())
 
 
 @app.route("/view_history")
+@login_required("admin")
 def view_history():
     history_ref = db.reference("History")
     history_data = history_ref.get()  # Fetch data from Firebase
