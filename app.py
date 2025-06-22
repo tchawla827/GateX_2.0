@@ -776,7 +776,22 @@ def student_dashboard(roll_number):
     request_list = []
     if requests:
         for key, value in requests.items():
+            # Combine outgoing_date and outgoing_time to sort by latest request
+            date_str = value.get("outgoing_date")
+            time_str = value.get("outgoing_time", "00:00")
+            try:
+                sort_dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+            except (TypeError, ValueError):
+                sort_dt = datetime.min
+            value["_sort_datetime"] = sort_dt
             request_list.append(value)
+
+        # Sort by the combined datetime in descending order so latest requests appear first
+        request_list.sort(key=lambda x: x["_sort_datetime"], reverse=True)
+
+        # Remove temporary sorting key
+        for item in request_list:
+            item.pop("_sort_datetime", None)
 
     return render_template(
         "student_dashboard.html", student=student, requests=request_list,now=datetime.now()
