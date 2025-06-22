@@ -131,8 +131,13 @@ GateX offers the following features:
        -subj "/CN=<your-host>" \
        -keyout key.pem -out cert.pem
      ```
+7. **Install Node Dependencies & Build Tailwind CSS**:
+   ```bash
+   npm install
+   npm run build:css
+   ```
 
-7. **Run the Application**:
+8. **Run the Application**:
    ```bash
    gunicorn -k eventlet -w 1 -b ${HOST:-0.0.0.0}:${PORT:-5000} app:app
    ```
