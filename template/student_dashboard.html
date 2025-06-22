@@ -86,9 +86,9 @@
                             {% for request in requests %}
                             <tr class="hover:bg-surface-50 dark:hover:bg-surface-750">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.reason }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.outgoing_date }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.outgoing_date | format_ddmmyyyy }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.outgoing_time }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.ingoing_date }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.ingoing_date | format_ddmmyyyy }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.ingoing_time }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
