@@ -101,6 +101,9 @@ GateX offers the following features:
   - (Optional) Set `TEACHER_PASSWORD_HASH` to override the default teacher
     password.  The application falls back to `admin123` if this variable is not
     provided.
+  - **Required:** set `SECRET_KEY` to a fixed value for signing Flask session
+    cookies. Use the same value in your local `.env` file and in the Hugging Face
+    **Variables** tab so logins remain valid across workers.
 
 4. **Download Face Landmark Model**:
    - Download: [shape_predictor_68_face_landmarks.dat.bz2](https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2)

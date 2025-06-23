@@ -92,7 +92,9 @@ def format_ddmmyyyy(value):
 
 
 app.jinja_env.filters["format_ddmmyyyy"] = format_ddmmyyyy
-app.secret_key = os.environ.get("SECRET_KEY", "123456")
+app.secret_key = os.environ["SECRET_KEY"]
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = True
 socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
 
