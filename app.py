@@ -60,6 +60,15 @@ cloudinary.config(
 
 app = Flask(__name__, template_folder="template", static_folder="static")
 
+# Configure session cookies differently when running inside a Hugging Face Space
+if os.environ.get("HF_SPACE_ID"):
+    app.config.update(
+        SESSION_COOKIE_SAMESITE="None",
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_NAME="gatx_session",
+    )
+
 app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
 )
