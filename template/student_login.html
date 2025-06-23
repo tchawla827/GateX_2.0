@@ -56,6 +56,9 @@
         <!-- Teacher Login Form -->
         <div id="teacher-form" class="card bg-white bg-opacity-70 dark:bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30 dark:border-surface-600 hidden">
             <div class="card-body p-6">
+                <p class="text-center text-surface-800 dark:text-surface-200 text-sm mb-4">
+                    Username: <strong>admin</strong> &bull; Password: <strong>admin123</strong>
+                </p>
                 <form action="{{ url_for('teacher_login') }}" method="post" class="space-y-4">
                     <div>
                         <label class="form-label text-surface-800 dark:text-surface-200">Teacher's Name</label>
