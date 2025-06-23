@@ -194,9 +194,19 @@ def match_with_database(img, database):
 
 
 @app.route("/")
+def choose_role():
+    """Display page to select teacher or student login."""
+    return render_template("login_choice.html", now=datetime.now())
+
+
+@app.route("/login")
 def login():
+    role = request.args.get("role", "student")
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+        "student_login.html",
+        get_flashed_messages=get_flashed_messages,
+        now=datetime.now(),
+        role=role,
     )
 
 @app.route("/logout")
@@ -235,7 +245,10 @@ def teacher_login():
             flash("Incorrect credentials")
 
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
+        "student_login.html",
+        get_flashed_messages=get_flashed_messages,
+        now=datetime.now(),
+        role="teacher",
     )
 
 
@@ -763,7 +776,10 @@ def student_login():
         flash("Student ID not found")
 
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+        "student_login.html",
+        get_flashed_messages=get_flashed_messages,
+        now=datetime.now(),
+        role="student",
     )
 
 

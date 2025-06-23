@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Select Login{% endblock %}
+
+{% block content %}
+<div class="relative min-h-screen flex items-center justify-center px-4 py-12" style="background-image: url({{ url_for('static', filename='images/slider-img.png') }}); background-size: cover; background-position: center;">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative z-10 w-full max-w-md text-center space-y-6">
+        <h1 class="text-3xl font-bold text-white">Login As</h1>
+        <a href="{{ url_for('login') }}?role=student" class="block w-full px-6 py-3 rounded-lg bg-green-500 bg-opacity-80 hover:bg-opacity-90 text-white backdrop-blur-sm">Student</a>
+        <a href="{{ url_for('login') }}?role=teacher" class="block w-full px-6 py-3 rounded-lg bg-green-500 bg-opacity-80 hover:bg-opacity-90 text-white backdrop-blur-sm">Teacher</a>
+    </div>
+</div>
+{% endblock %}
