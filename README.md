@@ -98,6 +98,9 @@ GateX offers the following features:
   - Copy `.env.example` to `.env` and populate the values for `FIREBASE_CREDENTIALS_JSON`, `FIREBASE_DB_URL`, and the Cloudinary variables.
   - The value of `FIREBASE_CREDENTIALS_JSON` should be the entire Firebase service account JSON and must **not** be committed to version control.
   - If the `private_key` contains newlines, represent them as `\n` in the `.env` file.
+  - (Optional) Set `TEACHER_PASSWORD_HASH` to override the default teacher
+    password.  The application falls back to `admin123` if this variable is not
+    provided.
 
 4. **Download Face Landmark Model**:
    - Download: [shape_predictor_68_face_landmarks.dat.bz2](https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2)
