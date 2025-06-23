@@ -167,6 +167,8 @@ and `PORT` values.
 ### Admins
 - Approve or reject outpass requests.
 - Monitor current out status and view history.
+- For demonstration, log in to the teacher portal with username `admin` and
+  password `admin123`.
 
 ---
 
