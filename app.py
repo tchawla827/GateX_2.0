@@ -11,12 +11,13 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
+import os
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from jinja2 import select_autoescape, FileSystemLoader
 from flask_socketio import SocketIO, emit
 import base64
 import numpy as np
 
-import os
 import json
 import cv2
 from datetime import datetime
@@ -67,6 +68,15 @@ cloudinary.config(
 )
 
 app = Flask(__name__, template_folder="template", static_folder="static")
+
+# ---- Hugging Face prefix patch ----
+prefix = os.getenv("HF_SPACE_PATH_PREFIX", "")
+if prefix and not prefix.startswith("/"):
+    prefix = "/" + prefix
+application = DispatcherMiddleware(
+    Flask(__name__),  # empty "dummy" root app
+    {prefix: app},
+)
 
 app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
@@ -957,10 +967,9 @@ def view_history():
 
 
 if __name__ == "__main__":
-    # Run with HTTPS so the webcam can be accessed on non-localhost origins
     socketio.run(
         app,
         host="0.0.0.0",
-        port=int(os.getenv("PORT", 5000)),
-        ssl_context=("cert.pem", "key.pem"),
+        port=7860,
+        debug=True,
     )
