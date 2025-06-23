@@ -790,7 +790,7 @@ def student_dashboard(roll_number):
             date_str = value.get("outgoing_date")
             time_str = value.get("outgoing_time", "00:00")
             try:
-            sort_dt = datetime.strptime(f"{date_str} {time_str}", "%d-%m-%Y %H:%M")
+                sort_dt = datetime.strptime(f"{date_str} {time_str}", "%d-%m-%Y %H:%M")
             except (TypeError, ValueError):
                 sort_dt = datetime.min
             value["_sort_datetime"] = sort_dt
