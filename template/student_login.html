@@ -92,5 +92,12 @@
         document.getElementById('student-form').classList.toggle('hidden', type !== 'student');
         document.getElementById('teacher-form').classList.toggle('hidden', type !== 'teacher');
     }
+
+    // Show the requested form on page load if role is provided
+    {% if role %}
+    document.addEventListener('DOMContentLoaded', function() {
+        showForm('{{ role }}');
+    });
+    {% endif %}
 </script>
 {% endblock %}
