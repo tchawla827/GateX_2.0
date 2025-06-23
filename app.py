@@ -38,6 +38,14 @@ from functools import wraps
 load_env()
 
 TEACHER_PASSWORD_HASH = os.environ.get("TEACHER_PASSWORD_HASH")
+if not TEACHER_PASSWORD_HASH:
+    # Default fallback password for the teacher login.
+    # This mirrors the credentials shown on the login page
+    # (username "admin", password "admin123") so the app can
+    # run without custom configuration.  Users can override
+    # this by setting the TEACHER_PASSWORD_HASH environment
+    # variable to the hashed value of their desired password.
+    TEACHER_PASSWORD_HASH = generate_password_hash("admin123")
 
 cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON")
 cred_info = json.loads(cred_json or "{}")
