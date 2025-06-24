@@ -31,9 +31,13 @@ from utils import load_env
 
 from jinja2 import Environment, select_autoescape
 
-
+import sys
+from integrity.integrity_check import verify_file_integrity
 
 load_env()
+
+if not verify_file_integrity(__file__):
+    sys.exit("Integrity check failed. File may be tampered.")
 
 TEACHER_PASSWORD_HASH = os.environ.get("TEACHER_PASSWORD_HASH")
 
