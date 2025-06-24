@@ -194,6 +194,39 @@ pip install -r requirements.txt
 
 ---
 
+## 🔐 File Integrity & Signing
+
+To prove authorship and detect tampering, we sign `app.py` (and optionally others) with an RSA keypair.
+
+1. **One-time setup**  
+   ```bash
+   python integrity/generate_keys.py
+   ```
+
+2. **Sign a file**  
+   ```bash
+   python integrity/sign_file.py app.py
+   ```
+
+3. **Verify at runtime**  
+   Inside `app.py`:
+   ```python
+   from integrity.integrity_check import verify_file_integrity
+   if not verify_file_integrity(__file__):
+       sys.exit("Integrity check failed. File may be tampered.")
+   ```
+
+4. **After code changes**  
+   ```bash
+   python integrity/sign_file.py app.py
+   git add app.py app.py.sig
+   git commit -m "Update app.py and signature"
+   git push
+   ```
+
+---
+
+
 ## Future Improvements
 
 - Enhanced UI for a modern user experience.
