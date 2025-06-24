@@ -1,52 +1,54 @@
+"""
+Usage:
+    python integrity/sign_file.py path/to/file.py
+Writes <file>.sig alongside <file>.  Exits non-zero on error.
+"""
 import hashlib
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import padding, rsa
 import sys
+from pathlib import Path
 
-PRIVATE_KEY_PATH = 'private_key.pem'
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 
+PRIV_PATH = Path(__file__).with_name("private_key.pem")
 
-def generate_key(path=PRIVATE_KEY_PATH):
-    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    with open(path, 'wb') as f:
-        f.write(private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        ))
-    with open('public_key.pem', 'wb') as f:
-        f.write(private_key.public_key().public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-        ))
-    return private_key
-
-def load_private_key(path=PRIVATE_KEY_PATH):
-    with open(path, 'rb') as f:
-        return serialization.load_pem_private_key(f.read(), password=None)
-
-def sign_file(file_path: str, key_path=PRIVATE_KEY_PATH):
-    try:
-        with open(file_path, 'rb') as f:
-            file_data = f.read()
-        digest = hashlib.sha256(file_data).digest()
-        try:
-            private_key = load_private_key(key_path)
-        except FileNotFoundError:
-            private_key = generate_key(key_path)
-        signature = private_key.sign(
-            digest,
-            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
-            hashes.SHA256(),
+def load_private_key():
+    if not PRIV_PATH.exists():
+        raise FileNotFoundError(
+            f"🔒 Private key not found at {PRIV_PATH}. "
+            "Run generate_keys.py on the signing machine first."
         )
-        with open(f'{file_path}.sig', 'wb') as f:
-            f.write(signature)
-        print('Signature written to', f'{file_path}.sig')
-    except FileNotFoundError:
-        print('File not found:', file_path)
+    return serialization.load_pem_private_key(PRIV_PATH.read_bytes(), password=None)
 
-if __name__ == '__main__':
+def sign_file(file_path: Path):
+    data   = file_path.read_bytes()
+    digest = hashlib.sha256(data).digest()
+
+    private_key = load_private_key()
+    signature   = private_key.sign(
+        digest,
+        padding.PSS(
+            mgf         = padding.MGF1(hashes.SHA256()),
+            salt_length = padding.PSS.MAX_LENGTH,
+        ),
+        hashes.SHA256(),
+    )
+
+    sig_path = file_path.with_suffix(file_path.suffix + ".sig")
+    sig_path.write_bytes(signature)
+    print(f"✅  Signature written to {sig_path}")
+
+def main():
     if len(sys.argv) != 2:
-        print('Usage: python sign_file.py <file>')
+        print("Usage: python integrity/sign_file.py <file>")
         sys.exit(1)
-    sign_file(sys.argv[1])
+
+    target = Path(sys.argv[1])
+    if not target.exists():
+        print(f"❌  File not found: {target}")
+        sys.exit(1)
+
+    sign_file(target)
+
+if __name__ == "__main__":
+    main()
