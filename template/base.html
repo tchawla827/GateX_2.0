@@ -58,6 +58,20 @@
             </div>
         </header>
 
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mx-auto px-4 mt-4 space-y-2">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg shadow-md text-sm
+                            {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         <!-- Main content block -->
         <main class="flex-grow container mx-auto px-4 py-8">
             {% block content %}{% endblock %}
