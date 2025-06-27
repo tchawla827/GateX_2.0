@@ -303,6 +303,7 @@ def uploaded_file(filename):
 
 
 @app.route("/markin", methods=["POST"])
+@login_required(role="teacher")
 def markin():
     global filename, detection
     frame = None
@@ -388,6 +389,7 @@ def markin():
 
 
 @app.route("/markout", methods=["POST"])
+@login_required(role="teacher")
 def markout():
     global filename, detection
     frame = None
@@ -799,16 +801,19 @@ def student_dashboard(roll_number):
 
 
 @app.route("/mark_out")
+@login_required(role="teacher")
 def mark_out():
     return render_template("mark_out.html",now=datetime.now())
 
 
 @app.route("/mark_in")
+@login_required(role="teacher")
 def mark_in():
     return render_template("mark_in.html",now=datetime.now())
 
 
 @app.route("/view_out_students")
+@login_required(role="teacher")
 def view_out_students():
     try:
 
@@ -900,6 +905,7 @@ def register():
 
 
 @app.route("/view_history")
+@login_required(role="teacher")
 def view_history():
     history_ref = db.reference("History")
     history_data = history_ref.get()  # Fetch data from Firebase
