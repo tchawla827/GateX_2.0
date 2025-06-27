@@ -174,9 +174,9 @@ def login():
 
 @app.route("/logout")
 def logout():
-    return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
-    )
+    session.clear()
+    flash("You have been logged out.")
+    return redirect(url_for("login"))
 
 @app.route("/home")
 def home():
