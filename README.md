@@ -163,6 +163,8 @@ and `PORT` values.
 ### Students
 - Submit outpass requests.
 - Mark out/in using facial recognition.
+- For demonstration, log in to the student portal with ID `IIT2023001` and
+  password `12345678`.
 
 ### Admins
 - Approve or reject outpass requests.
