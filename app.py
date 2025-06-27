@@ -68,6 +68,12 @@ app.jinja_env = Environment(
     loader=FileSystemLoader("template"), autoescape=select_autoescape(["html", "xml"])
 )
 app.jinja_env.globals.update(url_for=url_for)
+
+@app.context_processor
+def inject_get_flashed_messages():
+    """Make ``get_flashed_messages`` available in all templates."""
+    return dict(get_flashed_messages=get_flashed_messages)
+
 app.secret_key = os.environ.get("SECRET_KEY", "123456")
 socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
