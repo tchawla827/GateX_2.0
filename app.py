@@ -78,6 +78,15 @@ app.secret_key = os.environ.get("SECRET_KEY", "123456")
 socketio = SocketIO(app, async_mode="threading", cors_allowed_origins="*")
 current_frame = None
 
+
+@app.after_request
+def add_cache_control_headers(response):
+    """Prevent caching to stop back/forward navigation after logout."""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
