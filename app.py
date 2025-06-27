@@ -15,6 +15,7 @@ from jinja2 import select_autoescape, FileSystemLoader
 from flask_socketio import SocketIO, emit
 import base64
 import numpy as np
+from functools import wraps
 
 import os
 import json
@@ -166,6 +167,26 @@ def match_with_database(img, database):
 
 
 
+def login_required(role=None):
+    """Decorator to enforce login and optional role-based access."""
+
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            user_type = session.get("user_type")
+            if not user_type:
+                flash("You must be logged in to view this page.")
+                return redirect(url_for("login"))
+            if role and user_type != role:
+                flash("You are not authorized to access this page.")
+                return redirect(url_for("login"))
+            return view_func(*args, **kwargs)
+
+        return wrapped_view
+
+    return decorator
+
+
 @app.route("/")
 def login():
     return render_template(
@@ -189,6 +210,7 @@ def logout():
     return redirect(url_for("login"))
 
 @app.route("/home")
+@login_required(role="teacher")
 def home():
     return render_template("home.html",now=datetime.now())
 
@@ -751,6 +773,7 @@ def student_login():
 
 
 @app.route("/student_dashboard/<roll_number>")
+@login_required(role="student")
 def student_dashboard(roll_number):
 
     ref = db.reference("Students")
@@ -803,6 +826,7 @@ def view_out_students():
 
 
 @app.route("/submit_outpass_request", methods=["POST"])
+@login_required(role="student")
 def submit_outpass_request():
     name = request.form.get("name")
     roll_number = request.form.get("rollNumber")
@@ -830,6 +854,7 @@ def submit_outpass_request():
 
 
 @app.route("/admin_review")
+@login_required(role="teacher")
 def admin_review():
     outpass_requests_ref = db.reference("Outpass Requests")
     outpass_requests = outpass_requests_ref.get()
@@ -858,6 +883,7 @@ def admin_review():
 
 
 @app.route("/update_request_status", methods=["POST"])
+@login_required(role="teacher")
 def update_request_status():
     request_id = request.form.get("id")
     status = request.form.get("status")
