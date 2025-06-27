@@ -7,6 +7,7 @@ from flask import (
     url_for,
     flash,
     jsonify,
+    session,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -199,6 +200,8 @@ def teacher_login():
         password = request.form.get("password")
 
         if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
+            session["user_type"] = "teacher"
+            session["teacher_name"] = teacher_name
             return redirect(url_for("home"))
         else:
             flash("Incorrect credentials")
@@ -717,6 +720,8 @@ def student_login():
 
     if matching_student:
         if check_password_hash(matching_student["password"], password):
+            session["user_type"] = "student"
+            session["student_id"] = student_id
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             flash("Incorrect password")
