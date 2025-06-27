@@ -42,8 +42,18 @@
                     </span>
                 </a>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="{{ url_for('mark_in') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Mark Entry</a>
-                    <a href="{{ url_for('register') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Register</a>
+                    {% if session.get('user_type') == 'teacher' %}
+                        <a href="{{ url_for('home') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Dashboard</a>
+                        <a href="{{ url_for('admin_review') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Review Requests</a>
+                        <a href="{{ url_for('view_out_students') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Out Students</a>
+                        <a href="{{ url_for('view_history') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">History</a>
+                        <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Logout</a>
+                    {% elif session.get('user_type') == 'student' %}
+                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">My Dashboard</a>
+                        <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Login</a>
+                    {% endif %}
                 </nav>
             </div>
         </header>
