@@ -7,6 +7,7 @@ from flask import (
     url_for,
     flash,
     jsonify,
+    session,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -173,8 +174,9 @@ def login():
 
 @app.route("/logout")
 def logout():
+    session.clear()
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
     )
 
 @app.route("/home")
@@ -199,15 +201,20 @@ def teacher_login():
         password = request.form.get("password")
 
         if teacher_name == "admin" and check_password_hash(TEACHER_PASSWORD_HASH, password):
+            session.clear()
+            session["user_type"] = "teacher"
+            session["teacher_name"] = teacher_name
+            app.logger.info("Teacher logged in: %s", session.get("teacher_name"))
             return redirect(url_for("home"))
         else:
+            session.clear()
             flash("Incorrect credentials")
 
         return render_template(
             "teacher_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
         )
 
-    return render_template("teacher_login.html,now=datetime.now()")
+    return render_template("teacher_login.html", now=datetime.now())
 
 
 @app.route("/upload", methods=["POST"])
@@ -717,10 +724,16 @@ def student_login():
 
     if matching_student:
         if check_password_hash(matching_student["password"], password):
+            session.clear()
+            session["user_type"] = "student"
+            session["student_id"] = student_id
+            app.logger.info("Student logged in: %s", session.get("student_id"))
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
+            session.clear()
             flash("Incorrect password")
     else:
+        session.clear()
         flash("Student ID not found")
 
     return render_template(
