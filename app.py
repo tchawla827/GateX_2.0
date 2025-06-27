@@ -174,10 +174,19 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.clear()
-    return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
+    # Log which user is logging out for debugging/audit purposes
+    app.logger.info(
+        "User logging out: type=%s student=%s teacher=%s",
+        session.get("user_type"),
+        session.get("student_id"),
+        session.get("teacher_name"),
     )
+    # Clear all session data regardless of user type
+    session.clear()
+    # Provide feedback that the logout succeeded
+    flash("You have been logged out.")
+    # Redirect to the main login page
+    return redirect(url_for("login"))
 
 @app.route("/home")
 def home():
