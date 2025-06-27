@@ -195,8 +195,15 @@ def login_required(role=None):
 
 @app.route("/")
 def login():
+    user_type = session.get("user_type")
+    if user_type == "teacher":
+        return redirect(url_for("home"))
+    if user_type == "student":
+        roll = session.get("student_id")
+        if roll:
+            return redirect(url_for("student_dashboard", roll_number=roll))
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
     )
 
 @app.route("/logout")
@@ -233,6 +240,13 @@ def add_info():
 
 @app.route("/teacher_login", methods=["GET", "POST"])
 def teacher_login():
+    user_type = session.get("user_type")
+    if user_type == "teacher":
+        return redirect(url_for("home"))
+    if user_type == "student":
+        roll = session.get("student_id")
+        if roll:
+            return redirect(url_for("student_dashboard", roll_number=roll))
     if request.method == "POST":
         teacher_name = request.form.get("teacher_name")
         password = request.form.get("password")
