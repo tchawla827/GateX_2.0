@@ -43,16 +43,16 @@
                 </a>
                 <nav class="hidden md:flex space-x-6">
                     {% if session.get('user_type') == 'teacher' %}
-                        <a href="{{ url_for('home') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Dashboard</a>
-                        <a href="{{ url_for('admin_review') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Review Requests</a>
-                        <a href="{{ url_for('view_out_students') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Out Students</a>
-                        <a href="{{ url_for('view_history') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">History</a>
-                        <a href="{{ url_for('logout') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Logout</a>
+                        <a href="{{ url_for('home') }}" class="nav-link">Dashboard</a>
+                        <a href="{{ url_for('admin_review') }}" class="nav-link">Review Requests</a>
+                        <a href="{{ url_for('view_out_students') }}" class="nav-link">Out Students</a>
+                        <a href="{{ url_for('view_history') }}" class="nav-link">History</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
                     {% elif session.get('user_type') == 'student' %}
-                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">My Dashboard</a>
-                        <a href="{{ url_for('logout') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Logout</a>
+                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="nav-link">My Dashboard</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Login</a>
+                        <a href="{{ url_for('login') }}" class="nav-link">Login</a>
                     {% endif %}
                 </nav>
             </div>

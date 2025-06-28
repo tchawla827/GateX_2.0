@@ -81,8 +81,29 @@
   }
 
   .alert-error {
-    @apply p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg 
+    @apply p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg
            dark:bg-red-900 dark:text-red-100;
+  }
+
+  /* Navigation Links */
+  .nav-link {
+    @apply relative text-surface-600 dark:text-surface-300
+           transition-all duration-300;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute left-0 bottom-0 h-0.5 w-0
+           bg-gradient-to-r from-primary-500 to-secondary-500
+           transition-all duration-300;
+  }
+
+  .nav-link:hover {
+    @apply text-primary-600 dark:text-primary-400;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
   }
 }
 
