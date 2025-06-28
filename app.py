@@ -190,10 +190,10 @@ def login_required(role=None):
         def wrapped_view(*args, **kwargs):
             user_type = session.get("user_type")
             if not user_type:
-                flash("You must be logged in to view this page.")
+                flash("You must be logged in to view this page.", "error")
                 return redirect(url_for("login"))
             if role and user_type != role:
-                flash("You are not authorized to access this page.")
+                flash("You are not authorized to access this page.", "error")
                 return redirect(url_for("login"))
             return view_func(*args, **kwargs)
 
@@ -227,7 +227,7 @@ def logout():
     # Clear all session data regardless of user type
     session.clear()
     # Provide feedback that the logout succeeded
-    flash("You have been logged out.")
+    flash("You have been logged out.", "success")
     # Redirect to the main login page
     return redirect(url_for("login"))
 
@@ -268,7 +268,7 @@ def teacher_login():
             return redirect(url_for("home"))
         else:
             session.clear()
-            flash("Incorrect credentials")
+            flash("Incorrect credentials", "error")
 
         return render_template(
             "teacher_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
@@ -638,12 +638,12 @@ def submit_info():
     global filename
     try:
         if "filename" not in globals():
-            flash("Please capture a face image before submitting your information.")
+            flash("Please capture a face image before submitting your information.", "error")
             return redirect(url_for("register"))
 
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         if not os.path.exists(file_path):
-            flash("Image not found. Please capture or upload again.")
+            flash("Image not found. Please capture or upload again.", "error")
             return redirect(url_for("register"))
 
         name = request.form.get("name")
@@ -661,7 +661,7 @@ def submit_info():
         faces = detect_faces(data)
 
         if faces is None or len(faces) == 0:
-            flash("No face detected. Please try again.")
+            flash("No face detected. Please try again.", "error")
             return redirect(url_for("add_info"))
 
 
@@ -673,7 +673,7 @@ def submit_info():
                 break
             except Exception as e:
                 app.logger.error(f"Error extracting features: {e}")
-                flash("Failed to process face image. Please try again.")
+                flash("Failed to process face image. Please try again.", "error")
                 return redirect(url_for("add_info"))
 
         if (
@@ -681,7 +681,7 @@ def submit_info():
             or not isinstance(embedding, list)
             or "embedding" not in embedding[0]
         ):
-            flash("Failed to extract facial features. Please try again.")
+            flash("Failed to extract facial features. Please try again.", "error")
             return redirect(url_for("add_info"))
 
         ref = db.reference("Students")
@@ -705,7 +705,7 @@ def submit_info():
 
     except Exception as e:
         app.logger.exception("Error while submitting info: %s", e)
-        flash("An unexpected error occurred while submitting your information.")
+        flash("An unexpected error occurred while submitting your information.", "error")
         return redirect(url_for("register"))
 
 
@@ -793,10 +793,10 @@ def student_login():
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             session.clear()
-            flash("Incorrect password")
+            flash("Incorrect password", "error")
     else:
         session.clear()
-        flash("Student ID not found")
+        flash("Student ID not found", "error")
 
     return render_template(
         "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
