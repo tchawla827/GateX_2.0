@@ -25,7 +25,23 @@
     @apply bg-white dark:bg-surface-800 rounded-xl shadow-soft
            dark:shadow-soft-dark overflow-hidden transition-all
            duration-300
-           transform 
+           transform;
+  }
+
+  /* Service Cards Hover Effect */
+  .service-card {
+    @apply relative overflow-hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 opacity-20 pointer-events-none;
+    transform: translateX(-100%);
+    transition: transform 500ms ease-in-out;
+  }
+
+  .service-card:hover::before {
+    transform: translateX(0);
   }
 
   .card-header {
