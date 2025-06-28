@@ -95,13 +95,17 @@
     <!-- Toast container -->
     <div id="toast-container" class="fixed top-5 right-5 flex flex-col space-y-2 z-50"></div>
 
+    {% set flashes = get_flashed_messages(with_categories=true) %}
+    <script id="flashes-data" type="application/json">
+      {{ flashes | tojson | safe }}
+    </script>
+
     {% block scripts %}
       <!-- Page-level scripts (module) -->
       <script type="module">
         import { showToast } from "{{ url_for('static', filename='js/toast.js') }}";
-
         document.addEventListener('DOMContentLoaded', () => {
-          const flashes = {{ get_flashed_messages(with_categories=true) | tojson }};
+          const flashes = JSON.parse(document.getElementById('flashes-data').textContent);
           flashes.forEach(([category, msg]) => {
             const type = category === 'error' ? 'error' : 'success';
             showToast({ message: msg, type });
