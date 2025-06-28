@@ -14,13 +14,13 @@
                     </span>
                 </a>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="{{ url_for('home') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
+                    <a href="{{ url_for('home') }}" class="text-surface-600  dark:text-surface-300  transition-colors">
                         Dashboard
                     </a>
-                    <a href="{{ url_for('home') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
+                    <a href="{{ url_for('home') }}" class="text-surface-600  dark:text-surface-300  transition-colors">
                         Home
                     </a>
-                    <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors">
+                    <a href="{{ url_for('logout') }}" class="text-surface-600  dark:text-surface-300  transition-colors">
                         <i class="fas fa-user mr-1"></i> Logout
                     </a>
                 </nav>
@@ -53,7 +53,7 @@
                 </thead>
                 <tbody class="divide-y divide-surface-200 dark:divide-surface-700">
                     {% for student_id, student_info in out_students.items() %}
-                    <tr class="hover:bg-surface-50 dark:hover:bg-surface-750 transition-colors">
+                    <tr class="  transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ student_info['rollNumber'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ student_info['name'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ student_info['time_out'] }}</td>

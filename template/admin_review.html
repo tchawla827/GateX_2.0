@@ -24,7 +24,7 @@
             </thead>
             <tbody class="divide-y divide-surface-200 dark:divide-surface-700">
                 {% for request in requests %}
-                <tr class="hover:bg-surface-50 dark:hover:bg-surface-750 transition-colors">
+                <tr class="  transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.rollNumber }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ request.outgoing_date }}</td>
@@ -46,14 +46,14 @@
                             <form action="{{ url_for('update_request_status') }}" method="POST">
                                 <input type="hidden" name="id" value="{{ request.id }}">
                                 <input type="hidden" name="status" value="Approved">
-                                <button type="submit" class="btn-primary bg-green-500 hover:bg-green-600 px-3 py-1 text-sm">
+                                <button type="submit" class="btn-primary bg-green-500  px-3 py-1 text-sm">
                                     Approve
                                 </button>
                             </form>
                             <form action="{{ url_for('update_request_status') }}" method="POST">
                                 <input type="hidden" name="id" value="{{ request.id }}">
                                 <input type="hidden" name="status" value="Rejected">
-                                <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 px-3 py-1 text-sm">
+                                <button type="submit" class="btn-primary bg-red-500  px-3 py-1 text-sm">
                                     Reject
                                 </button>
                             </form>
