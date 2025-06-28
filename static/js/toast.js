@@ -8,10 +8,12 @@
     const container = document.getElementById('toast-container');
     if(!container) return;
 
-    const variant = type === 'success' ? 'border-green-500 dark:border-green-400' : 'border-red-500 dark:border-red-400';
+    const isError = type === 'error';
+    const variant = isError ? 'border-red-500 dark:border-red-400' : 'border-green-500 dark:border-green-400';
+    const icon = isError ? icons.error : icons.success;
     const toast = document.createElement('div');
     toast.className = `relative flex items-start p-4 pr-10 rounded-lg shadow-lg backdrop-blur-sm bg-white dark:bg-gray-800 border-l-4 ${variant} transform transition-transform duration-500 translate-x-full opacity-0`;
-    toast.innerHTML = `${icons[type] || ''}<div class="ml-3 text-sm flex-1">${message}</div><button class="absolute top-2 right-2 text-green-900 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors cursor-pointer" aria-label="Close">&times;</button>`;
+    toast.innerHTML = `${icon}<div class="ml-3 text-sm flex-1">${message}</div><button class="absolute top-2 right-2 text-green-900 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors cursor-pointer" aria-label="Close">&times;</button>`;
 
     const btn = toast.querySelector('button');
     btn.addEventListener('click', () => removeToast(toast));
