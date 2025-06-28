@@ -101,19 +101,20 @@ def upload_database(filename):
     try:
         cloudinary.api.resource(filename)
         valid = True
-        error = f"<h1>{filename} already exists in the database</h1>"
+        error = f"{filename} already exists in the database"
     except cloudinary.exceptions.NotFound:
         pass
 
     if not filename[:-4].isdigit():
         valid = True
-        error = f"<h1>Please make sure that the name of the {filename} is a number</h1>"
+        error = f"Please make sure that the name of the {filename} is a number"
 
     if not valid:
 
         filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         cloudinary.uploader.upload(filename, public_id=os.path.basename(filename))
         error = None
+        flash("Image uploaded successfully", "success")
 
     return valid, error
 
@@ -190,10 +191,10 @@ def login_required(role=None):
         def wrapped_view(*args, **kwargs):
             user_type = session.get("user_type")
             if not user_type:
-                flash("You must be logged in to view this page.")
+                flash("You must be logged in to view this page.", "error")
                 return redirect(url_for("login"))
             if role and user_type != role:
-                flash("You are not authorized to access this page.")
+                flash("You are not authorized to access this page.", "error")
                 return redirect(url_for("login"))
             return view_func(*args, **kwargs)
 
@@ -212,7 +213,7 @@ def login():
         if roll:
             return redirect(url_for("student_dashboard", roll_number=roll))
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages, now=datetime.now()
+        "student_login.html", now=datetime.now()
     )
 
 @app.route("/logout")
@@ -227,7 +228,7 @@ def logout():
     # Clear all session data regardless of user type
     session.clear()
     # Provide feedback that the logout succeeded
-    flash('You have been logged out', 'success')
+    flash('Logged out successfully', 'success')
     # Redirect to the main login page
     return redirect(url_for("login"))
 
@@ -265,13 +266,14 @@ def teacher_login():
             session["user_type"] = "teacher"
             session["teacher_name"] = teacher_name
             app.logger.info("Teacher logged in: %s", session.get("teacher_name"))
+            flash("Logged in successfully", "success")
             return redirect(url_for("home"))
         else:
             session.clear()
-            flash("Incorrect credentials")
+            flash("Incorrect credentials", "error")
 
         return render_template(
-            "teacher_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+            "teacher_login.html", now=datetime.now()
         )
 
     return render_template("teacher_login.html", now=datetime.now())
@@ -282,12 +284,14 @@ def upload():
     global filename
 
     if "file" not in request.files:
-        return "No file uploaded", 400
+        flash("No file uploaded", "error")
+        return redirect(url_for("register"))
 
     file = request.files["file"]
 
     if file.filename == "":
-        return "No selected file", 400
+        flash("No selected file", "error")
+        return redirect(url_for("register"))
 
     if file and allowed_file(file.filename):
 
@@ -307,11 +311,13 @@ def upload():
         val, err = upload_database(filename)
 
         if val:
-            return err
+            flash(err, "error")
+            return redirect(url_for("register"))
 
         return redirect(url_for("add_info"))
 
-    return "File upload failed", 400
+    flash("File upload failed", "error")
+    return redirect(url_for("register"))
 
 
 def allowed_file(filename):
@@ -619,7 +625,8 @@ def capture():
         val, err = upload_database(filename)
 
         if val:
-            return err
+            flash(err, "error")
+            return redirect(url_for("register"))
 
     return redirect(url_for("add_info"))
 
@@ -638,12 +645,12 @@ def submit_info():
     global filename
     try:
         if "filename" not in globals():
-            flash("Please capture a face image before submitting your information.")
+            flash("Please capture a face image before submitting your information.", "error")
             return redirect(url_for("register"))
 
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         if not os.path.exists(file_path):
-            flash("Image not found. Please capture or upload again.")
+            flash("Image not found. Please capture or upload again.", "error")
             return redirect(url_for("register"))
 
         name = request.form.get("name")
@@ -661,7 +668,7 @@ def submit_info():
         faces = detect_faces(data)
 
         if faces is None or len(faces) == 0:
-            flash("No face detected. Please try again.")
+            flash("No face detected. Please try again.", "error")
             return redirect(url_for("add_info"))
 
 
@@ -673,7 +680,7 @@ def submit_info():
                 break
             except Exception as e:
                 app.logger.error(f"Error extracting features: {e}")
-                flash("Failed to process face image. Please try again.")
+                flash("Failed to process face image. Please try again.", "error")
                 return redirect(url_for("add_info"))
 
         if (
@@ -681,7 +688,7 @@ def submit_info():
             or not isinstance(embedding, list)
             or "embedding" not in embedding[0]
         ):
-            flash("Failed to extract facial features. Please try again.")
+            flash("Failed to extract facial features. Please try again.", "error")
             return redirect(url_for("add_info"))
 
         ref = db.reference("Students")
@@ -705,7 +712,7 @@ def submit_info():
 
     except Exception as e:
         app.logger.exception("Error while submitting info: %s", e)
-        flash("An unexpected error occurred while submitting your information.")
+        flash("An unexpected error occurred while submitting your information.", "error")
         return redirect(url_for("register"))
 
 
@@ -790,16 +797,17 @@ def student_login():
             session["user_type"] = "student"
             session["student_id"] = student_id
             app.logger.info("Student logged in: %s", session.get("student_id"))
+            flash("Logged in successfully", "success")
             return redirect(url_for("student_dashboard", roll_number=student_id))
         else:
             session.clear()
-            flash("Incorrect password")
+            flash("Incorrect password", "error")
     else:
         session.clear()
-        flash("Student ID not found")
+        flash("Student ID not found", "error")
 
     return render_template(
-        "student_login.html", get_flashed_messages=get_flashed_messages,now=datetime.now()
+        "student_login.html", now=datetime.now()
     )
 
 
