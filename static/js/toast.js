@@ -11,9 +11,13 @@
     const isError = type === 'error';
     const variant = isError ? 'border-red-500 dark:border-red-400' : 'border-green-500 dark:border-green-400';
     const icon = isError ? icons.error : icons.success;
+    const btnColor = isError
+      ? 'text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300'
+      : 'text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300';
+
     const toast = document.createElement('div');
-    toast.className = `relative flex items-start p-4 pr-10 rounded-lg shadow-lg backdrop-blur-sm bg-white dark:bg-gray-800 border-l-4 ${variant} transform transition-transform duration-500 translate-x-full opacity-0`;
-    toast.innerHTML = `${icon}<div class="ml-3 text-sm flex-1">${message}</div><button class="absolute top-2 right-2 text-green-900 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors cursor-pointer" aria-label="Close">&times;</button>`;
+    toast.className = `relative flex items-start p-4 pr-10 rounded-lg shadow-lg backdrop-blur-sm bg-white dark:bg-gray-800 border-l-4 ${variant} transform transition-transform duration-500 hover:shadow-xl translate-x-full opacity-0`;
+    toast.innerHTML = `${icon}<div class="ml-3 text-sm flex-1">${message}</div><button class="absolute top-2 right-2 ${btnColor} transition-colors cursor-pointer" aria-label="Close">&times;</button>`;
 
     const btn = toast.querySelector('button');
     btn.addEventListener('click', () => removeToast(toast));
