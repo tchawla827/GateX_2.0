@@ -21,7 +21,7 @@
 <body class="min-h-screen bg-surface-50 text-surface-900 dark:bg-surface-900 dark:text-surface-100 transition-colors duration-200">
     <!-- Dark mode toggle button (fixed in corner) -->
     <button onclick="toggleDarkMode()" 
-            class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-surface-200 dark:bg-surface-700 shadow-lg hover:shadow-xl transition-all"
+            class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-surface-200 dark:bg-surface-700 shadow-lg  transition-all"
             aria-label="Toggle dark mode">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-surface-600 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -43,16 +43,16 @@
                 </a>
                 <nav class="hidden md:flex space-x-6">
                     {% if session.get('user_type') == 'teacher' %}
-                        <a href="{{ url_for('home') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Dashboard</a>
-                        <a href="{{ url_for('admin_review') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Review Requests</a>
-                        <a href="{{ url_for('view_out_students') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Out Students</a>
-                        <a href="{{ url_for('view_history') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">History</a>
-                        <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Logout</a>
+                        <a href="{{ url_for('home') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Dashboard</a>
+                        <a href="{{ url_for('admin_review') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Review Requests</a>
+                        <a href="{{ url_for('view_out_students') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Out Students</a>
+                        <a href="{{ url_for('view_history') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">History</a>
+                        <a href="{{ url_for('logout') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Logout</a>
                     {% elif session.get('user_type') == 'student' %}
-                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">My Dashboard</a>
-                        <a href="{{ url_for('logout') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Logout</a>
+                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">My Dashboard</a>
+                        <a href="{{ url_for('logout') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="text-surface-600 hover:text-primary-500 dark:text-surface-300 dark:hover:text-primary-400 transition-colors transform hover:-translate-y-1">Login</a>
+                        <a href="{{ url_for('login') }}" class="text-surface-600  dark:text-surface-300  transition-colors transform ">Login</a>
                     {% endif %}
                 </nav>
             </div>

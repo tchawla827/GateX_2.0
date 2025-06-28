@@ -6,26 +6,26 @@
   /* Buttons */
   .btn-primary {
     @apply px-4 py-2 rounded-lg bg-primary-500 text-white font-medium
-           hover:bg-primary-600 focus:ring-2 focus:ring-primary-400
+           focus:ring-2 focus:ring-primary-400
            focus:ring-opacity-50 transition-all duration-200
-           shadow-sm hover:shadow-md disabled:opacity-50
-           transform hover:-translate-y-1;
+           shadow-sm disabled:opacity-50
+           transform 
   }
 
   .btn-secondary {
     @apply px-4 py-2 rounded-lg bg-secondary-500 text-white font-medium
-           hover:bg-secondary-600 focus:ring-2 focus:ring-secondary-400
+           focus:ring-2 focus:ring-secondary-400
            focus:ring-opacity-50 transition-all duration-200
-           shadow-sm hover:shadow-md disabled:opacity-50
-           transform hover:-translate-y-1;
+           shadow-sm disabled:opacity-50
+           transform 
   }
 
   /* Cards */
   .card {
     @apply bg-white dark:bg-surface-800 rounded-xl shadow-soft
            dark:shadow-soft-dark overflow-hidden transition-all
-           duration-300 hover:shadow-md dark:hover:shadow-lg
-           transform hover:-translate-y-1;
+           duration-300
+           transform 
   }
 
   .card-header {
