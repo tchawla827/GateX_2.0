@@ -87,7 +87,8 @@
 
   /* Navigation Links */
   .nav-link {
-    @apply relative text-surface-600 dark:text-surface-300
+    @apply relative px-3 py-1.5 rounded-md border border-surface-300 dark:border-surface-600
+           bg-surface-50 dark:bg-surface-800 text-surface-600 dark:text-surface-300
            transition-all duration-300;
   }
 
