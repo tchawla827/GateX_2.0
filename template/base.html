@@ -21,7 +21,7 @@
 <body class="min-h-screen bg-surface-50 text-surface-900 dark:bg-surface-900 dark:text-surface-100 transition-colors duration-200">
     <!-- Dark mode toggle button (fixed in corner) -->
     <button onclick="toggleDarkMode()" 
-            class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-surface-200 dark:bg-surface-700 shadow-lg  transition-all"
+            class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-surface-200 dark:bg-surface-700 shadow-lg transition-all"
             aria-label="Toggle dark mode">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-surface-600 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -58,20 +58,6 @@
             </div>
         </header>
 
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="container mx-auto px-4 mt-4 space-y-2">
-                    {% for category, message in messages %}
-                        <div class="p-4 rounded-lg shadow-md text-sm
-                            {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
         <!-- Main content block -->
         <main class="flex-grow container mx-auto px-4 py-8">
             {% block content %}{% endblock %}
@@ -88,30 +74,35 @@
 
     <!-- Dark mode toggle script -->
     <script>
-        // Check for dark mode preference
         function toggleDarkMode() {
             const html = document.documentElement;
             html.classList.toggle('dark');
-            
-            // Save preference to localStorage
             localStorage.setItem('darkMode', html.classList.contains('dark'));
         }
 
-        // Initialize dark mode from localStorage or system preference
         function initDarkMode() {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const storedMode = localStorage.getItem('darkMode');
-            
             if (storedMode === 'true' || (!storedMode && prefersDark)) {
                 document.documentElement.classList.add('dark');
             }
         }
-
-        // Run initialization
         initDarkMode();
     </script>
 
+    <!-- Toast container & script -->
+    <div id="toast-container" class="fixed top-5 right-5 flex flex-col space-y-2 z-50"></div>
+    <script type="module" src="{{ url_for('static', filename='js/toast.js') }}"></script>
+
     <!-- Additional scripts block -->
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+      <script>
+        const flashes = {{ get_flashed_messages(with_categories=true) | tojson }};
+        flashes.forEach(([category, msg]) => {
+          const type = category === 'error' ? 'error' : 'success';
+          showToast({ message: msg, type });
+        });
+      </script>
+    {% endblock %}
 </body>
 </html>

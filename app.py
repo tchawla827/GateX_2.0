@@ -227,7 +227,7 @@ def logout():
     # Clear all session data regardless of user type
     session.clear()
     # Provide feedback that the logout succeeded
-    flash("You have been logged out.")
+    flash('You have been logged out', 'success')
     # Redirect to the main login page
     return redirect(url_for("login"))
 
