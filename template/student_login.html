@@ -1,35 +1,36 @@
 {% extends "base.html" %}
-
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="relative min-h-screen flex items-center justify-center px-4 py-12" 
-     style="background-image: url({{ url_for('static', filename='images/slider-img.png') }}); 
-            background-size: cover; 
+<div class="relative min-h-screen flex items-center justify-center px-4 py-12"
+     style="background-image: url({{ url_for('static', filename='images/slider-img.png') }});
+            background-size: cover;
             background-position: center;">
     <!-- Dark overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-    
+
     <div class="relative z-10 w-full max-w-md">
         <h1 class="text-3xl font-bold text-center text-white mb-8">Login</h1>
-        
+
+        <!-- Student / Teacher toggle -->
         <div class="flex justify-center space-x-4 mb-8">
-            <button onclick="showForm('student')" 
-                    class="px-6 py-3 rounded-lg bg-green-500 bg-opacity-80  text-white backdrop-blur-sm transition-all duration-200">
+            <button onclick="showForm('student')"
+                    class="px-6 py-3 rounded-lg bg-green-500 bg-opacity-80 text-white backdrop-blur-sm transition-all duration-200">
                 Student Login
             </button>
-            <button onclick="showForm('teacher')" 
-                    class="px-6 py-3 rounded-lg bg-green-500 bg-opacity-80  text-white backdrop-blur-sm transition-all duration-200">
+            <button onclick="showForm('teacher')"
+                    class="px-6 py-3 rounded-lg bg-green-500 bg-opacity-80 text-white backdrop-blur-sm transition-all duration-200">
                 Teacher Login
             </button>
         </div>
 
         <!-- Student Login Form -->
-        <div id="student-form" class="card bg-white bg-opacity-70 dark:bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30 dark:border-surface-600">
+        <div id="student-form"
+             class="card bg-white bg-opacity-70 dark:bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30 dark:border-surface-600">
             <div class="card-body p-6">
                 <form action="{{ url_for('student_login') }}" method="post" class="space-y-4">
                     <div>
-                        <label class="form-label text-surface-800 dark:text-surface-200">Student ID</label>
+                        <label class="form-label text-surface-800 dark:text-surface-200">Student&nbsp;ID</label>
                         <input type="text" name="rollNumber" placeholder="Enter Student ID" required
                                class="form-input w-full bg-white bg-opacity-90 dark:bg-surface-700 dark:bg-opacity-90">
                     </div>
@@ -38,39 +39,38 @@
                         <input type="password" name="password" placeholder="Enter Password" required
                                class="form-input w-full bg-white bg-opacity-90 dark:bg-surface-700 dark:bg-opacity-90">
                     </div>
-                    <button type="submit" class="btn-primary w-full bg-primary-500 ">
+                    <button type="submit" class="btn-primary w-full bg-primary-500">
                         Login
                     </button>
                     <p class="mt-2 text-center text-surface-600 dark:text-surface-400 text-sm">
                         Demo login: ID <code>IIT2023001</code>, password <code>12345678</code>.
                     </p>
                 </form>
-                
             </div>
         </div>
 
         <!-- Teacher Login Form -->
-        <div id="teacher-form" class="card bg-white bg-opacity-70 dark:bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30 dark:border-surface-600 hidden">
+        <div id="teacher-form"
+             class="card bg-white bg-opacity-70 dark:bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30 dark:border-surface-600 hidden">
             <div class="card-body p-6">
                 <form action="{{ url_for('teacher_login') }}" method="post" class="space-y-4">
                     <div>
-                        <label class="form-label text-surface-800 dark:text-surface-200">Teacher's Name</label>
+                        <label class="form-label text-surface-800 dark:text-surface-200">Teacher&nbsp;Name</label>
                         <input type="text" name="teacher_name" placeholder="Enter your name" required
                                class="form-input w-full bg-white bg-opacity-90 dark:bg-surface-700 dark:bg-opacity-90">
                     </div>
                     <div>
                         <label class="form-label text-surface-800 dark:text-surface-200">Password</label>
-                        <input type="password" name="password" placeholder="Enter password" required
+                        <input type="password" name="password" placeholder="Enter Password" required
                                class="form-input w-full bg-white bg-opacity-90 dark:bg-surface-700 dark:bg-opacity-90">
                     </div>
-                    <button type="submit" class="btn-primary w-full bg-primary-500 ">
+                    <button type="submit" class="btn-primary w-full bg-primary-500">
                         Login
                     </button>
                     <p class="mt-2 text-center text-surface-600 dark:text-surface-400 text-sm">
                         Demo login: username <code>admin</code>, password <code>admin123</code>.
                     </p>
                 </form>
-                
             </div>
         </div>
     </div>
