@@ -19,6 +19,9 @@
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 </head>
 <body class="min-h-screen bg-surface-50 text-surface-900 dark:bg-surface-900 dark:text-surface-100 transition-colors duration-200">
+    <!-- Toast container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-4"></div>
+
     <!-- Dark mode toggle button (fixed in corner) -->
     <button onclick="toggleDarkMode()" 
             class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-surface-200 dark:bg-surface-700 shadow-lg  transition-all"
@@ -58,19 +61,11 @@
             </div>
         </header>
 
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="container mx-auto px-4 mt-4 space-y-2">
-                    {% for category, message in messages %}
-                        <div class="p-4 rounded-lg shadow-md text-sm
-                            {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        <!-- Placeholder for server-sent messages -->
+        {% set flashed = get_flashed_messages(with_categories=true) %}
+        <script>
+            window.__flashed_messages__ = {{ flashed|tojson }};
+        </script>
 
         <!-- Main content block -->
         <main class="flex-grow container mx-auto px-4 py-8">
@@ -109,6 +104,17 @@
 
         // Run initialization
         initDarkMode();
+    </script>
+
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.__flashed_messages__) {
+                window.__flashed_messages__.forEach(([category, message]) => {
+                    window.showToast(message, category);
+                });
+            }
+        });
     </script>
 
     <!-- Additional scripts block -->
