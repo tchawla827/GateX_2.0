@@ -20,7 +20,7 @@
 </head>
 <body class="min-h-screen bg-surface-50 text-surface-900 dark:bg-surface-900 dark:text-surface-100 transition-colors duration-200">
     <!-- Toast container -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-4"></div>
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-4"></div>
 
     <!-- Dark mode toggle button (fixed in corner) -->
     <button onclick="toggleDarkMode()" 
@@ -111,7 +111,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (window.__flashed_messages__) {
                 window.__flashed_messages__.forEach(([category, message]) => {
-                    window.showToast(message, category);
+                    window.showToast(category, message);
                 });
             }
         });
