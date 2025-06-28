@@ -29,9 +29,14 @@
   }
 
   /* Service Cards Hover Effect */
-  .service-card {
-    @apply relative overflow-hidden;
-  }
+.service-card {
+  @apply relative overflow-hidden transition-transform;
+}
+
+.service-card::after {
+  content: '';
+  @apply absolute left-0 top-0 h-full w-1 bg-purple-500;
+}
 
   .service-card::before {
     content: '';
@@ -40,9 +45,13 @@
     transition: transform 500ms ease-in-out;
   }
 
-  .service-card:hover::before {
-    transform: translateX(0);
-  }
+.service-card:hover::before {
+  transform: translateX(0);
+}
+
+.service-card:hover {
+  @apply scale-105;
+}
 
   .card-header {
     @apply px-6 py-4 border-b border-surface-100 dark:border-surface-700 
