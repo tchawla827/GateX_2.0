@@ -30,7 +30,7 @@
 
   /* Service Cards Hover Effect */
 .service-card {
-  @apply relative overflow-hidden transition-transform duration-500 ease-in-out;
+  @apply relative overflow-hidden transition-transform duration-1000 ease-in-out;
 }
 
 .service-card::after {
