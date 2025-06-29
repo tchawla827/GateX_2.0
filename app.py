@@ -34,6 +34,7 @@ from utils import load_env
 from jinja2 import Environment, select_autoescape
 
 import sys
+import math
 from integrity.integrity_check import verify_file_integrity
 
 load_env()
@@ -947,10 +948,41 @@ def view_history():
     history_ref = db.reference("History")
     history_data = history_ref.get()  # Fetch data from Firebase
 
-    if history_data is None:
-        history_data = {}  # Initialize as an empty dictionary if no history
+    if not history_data:
+        history_data = {}
 
-    return render_template("view_history.html", history=history_data,now=datetime.now())
+    # Convert history records to a list for easier pagination
+    if isinstance(history_data, dict):
+        records = list(history_data.values())
+    elif isinstance(history_data, list):
+        records = history_data
+    else:
+        records = []
+
+    def parse_dt(value):
+        try:
+            return datetime.fromisoformat(value)
+        except Exception:
+            return datetime.min
+
+    # Sort entries by checkout time (latest first)
+    records.sort(key=lambda x: parse_dt(x.get("time_out") or x.get("time_in") or ""), reverse=True)
+
+    per_page = 10
+    page = request.args.get("page", 1, type=int)
+    total_pages = max(1, math.ceil(len(records) / per_page))
+
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_records = records[start:end]
+
+    return render_template(
+        "view_history.html",
+        history=page_records,
+        total_pages=total_pages,
+        current_page=page,
+        now=datetime.now(),
+    )
 
 
 
