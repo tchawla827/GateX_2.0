@@ -3,9 +3,9 @@
 {% block title %}Mark In - Face Recognition{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 flex-grow">
+<div class="container mx-auto px-4 py-4 flex-grow">
     <!-- Hero Section -->
-    <div class="text-center mb-12">
+    <div class="text-center mb-6">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl shadow-lg mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -47,7 +47,7 @@
 
             <!-- Camera Feed -->
             <div class="px-6">
-                <div class="camera-container mb-6 relative">
+                <div class="camera-container mb-4 relative">
                     <div class="camera-frame">
                         <video id="video" autoplay playsinline muted class="camera-feed"></video>
                         <div class="face-guide"></div>
@@ -58,7 +58,7 @@
                             <div class="dot dot-br"></div>
                         </div>
                     </div>
-                    <div class="absolute bottom-6 left-0 right-0 flex justify-center">
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center">
                         <button id="capture-button" class="p-4 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white shadow-xl transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 ring-2 ring-white dark:ring-surface-800">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="px-6 pb-6">
+            <div class="px-6 pb-4">
                 <p class="text-center text-surface-600 dark:text-surface-300 mb-4">
                     Position the student's face within the frame
                 </p>
