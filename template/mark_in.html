@@ -3,9 +3,9 @@
 {% block title %}Mark In - Face Recognition{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-4 flex-grow">
+<div class="container mx-auto px-4 py-2 flex-grow">
     <!-- Hero Section -->
-    <div class="text-center mb-6">
+    <div class="text-center mb-2">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl shadow-lg mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -23,9 +23,9 @@
     <!-- Main Content -->
     <div class="max-w-3xl mx-auto">
         <!-- Camera Section -->
-        <div class="card bg-white dark:bg-surface-800 rounded-3xl shadow-xl overflow-hidden mb-8 transition-all duration-300 hover:shadow-2xl">
+        <div class="card bg-white dark:bg-surface-800 rounded-3xl shadow-xl overflow-hidden mb-4 transition-all duration-300 hover:shadow-2xl">
             <div class="p-6 pb-4">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6" id="live-recognition-header">
                     <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-100">
                         <span class="relative">
                             <span class="absolute -left-2 -top-2 w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full opacity-60"></span>
@@ -153,6 +153,13 @@
 </div>
 
 <style>
+    /* Hide the Live Recognition header & camera status */
+    #live-recognition-header,
+    #camera-status,
+    #camera-status + span {
+      display: none;
+    }
+
     /* Camera Styles */
     .camera-container {
         position: relative;
@@ -408,5 +415,4 @@
     // Initialize camera when page loads
     document.addEventListener('DOMContentLoaded', startCamera);
 </script>
-
 {% endblock %}
