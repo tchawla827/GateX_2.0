@@ -45,18 +45,15 @@
                         GateX 2.0
                     </span>
                 </a>
-                <nav class="hidden md:flex space-x-6">
+                <nav class="hidden md:flex space-x-4">
                     {% if session.get('user_type') == 'teacher' %}
-                        <a href="{{ url_for('home') }}" class="nav-link">Dashboard</a>
-                        <a href="{{ url_for('admin_review') }}" class="nav-link">Review Requests</a>
-                        <a href="{{ url_for('view_out_students') }}" class="nav-link">Out Students</a>
-                        <a href="{{ url_for('view_history') }}" class="nav-link">History</a>
-                        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                        <a href="{{ url_for('home') }}" class="nav-link px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow-sm hover:bg-primary-600 transition-colors duration-200">Dashboard</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link px-4 py-2 rounded-lg bg-red-500 text-white font-semibold shadow-sm hover:bg-red-600 transition-colors duration-200">Logout</a>
                     {% elif session.get('user_type') == 'student' %}
-                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="nav-link">My Dashboard</a>
-                        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                        <a href="{{ url_for('student_dashboard', roll_number=session.get('student_id')) }}" class="nav-link px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow-sm hover:bg-primary-600 transition-colors duration-200">My Dashboard</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link px-4 py-2 rounded-lg bg-red-500 text-white font-semibold shadow-sm hover:bg-red-600 transition-colors duration-200">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                        <a href="{{ url_for('login') }}" class="nav-link px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow-sm hover:bg-primary-600 transition-colors duration-200">Login</a>
                     {% endif %}
                 </nav>
             </div>
