@@ -948,6 +948,7 @@ def view_history():
     # Date range filtering
     start_date_str = request.args.get("start_date")
     end_date_str = request.args.get("end_date")
+    search_query = request.args.get("search", "")
 
     try:
         start_date = (
@@ -990,6 +991,18 @@ def view_history():
     # Sort entries by checkout time (latest first)
     records.sort(key=lambda x: parse_dt(x.get("time_out") or x.get("time_in") or ""), reverse=True)
 
+    # Filter by search query
+    if search_query:
+        s = search_query.lower()
+        filtered = []
+        for r in records:
+            name = str(r.get("name", "")).lower()
+            roll = str(r.get("rollNumber", "")).lower()
+            phone = str(r.get("phone", "")).lower()
+            if s in name or s in roll or s in phone:
+                filtered.append(r)
+        records = filtered
+
     # Filter by date range if provided
     if start_date or end_date:
         filtered = []
@@ -1025,6 +1038,7 @@ def view_history():
         current_page=page,
         start_date=start_date_str,
         end_date=end_date_str,
+        search=search_query,
         now=datetime.now(),
     )
 
