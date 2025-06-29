@@ -13,11 +13,13 @@
             <div class="flex flex-wrap gap-2">
                 <!-- Date Filter -->
                 <div class="relative">
-                    <button class="flex items-center gap-2 px-4 py-2 bg-surface-100 dark:bg-surface-700 rounded-lg text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Date Range</span>
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </button>
+                    <form method="get" action="{{ url_for('view_history') }}" class="flex flex-wrap items-center gap-2">
+                        <input type="date" name="start_date" value="{{ start_date or '' }}" class="form-input h-10" />
+                        <span class="mx-1 text-surface-500 dark:text-surface-400">-</span>
+                        <input type="date" name="end_date" value="{{ end_date or '' }}" class="form-input h-10" />
+                        <input type="hidden" name="page" value="1" />
+                        <button type="submit" class="btn-primary h-10 px-3">Apply</button>
+                    </form>
                 </div>
                 
                 <!-- Search -->
@@ -117,14 +119,14 @@
         <div class="mt-auto pt-6 flex justify-center">
             <nav class="flex items-center gap-1">
                 {% set prev_page = current_page - 1 %}
-                <a href="{{ url_for('view_history', page=prev_page) }}" class="px-3 py-1 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 {% if current_page <= 1 %}pointer-events-none opacity-50{% endif %}">
+                <a href="{{ url_for('view_history', page=prev_page, start_date=request.args.get('start_date'), end_date=request.args.get('end_date')) }}" class="px-3 py-1 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 {% if current_page <= 1 %}pointer-events-none opacity-50{% endif %}">
                     <i class="fas fa-chevron-left"></i>
                 </a>
                 {% for p in range(1, total_pages + 1) %}
-                <a href="{{ url_for('view_history', page=p) }}" class="px-3 py-1 rounded-md {% if p == current_page %}bg-primary-500 text-white{% else %}bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600{% endif %}">{{ p }}</a>
+                <a href="{{ url_for('view_history', page=p, start_date=request.args.get('start_date'), end_date=request.args.get('end_date')) }}" class="px-3 py-1 rounded-md {% if p == current_page %}bg-primary-500 text-white{% else %}bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600{% endif %}">{{ p }}</a>
                 {% endfor %}
                 {% set next_page = current_page + 1 %}
-                <a href="{{ url_for('view_history', page=next_page) }}" class="px-3 py-1 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 {% if current_page >= total_pages %}pointer-events-none opacity-50{% endif %}">
+                <a href="{{ url_for('view_history', page=next_page, start_date=request.args.get('start_date'), end_date=request.args.get('end_date')) }}" class="px-3 py-1 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 {% if current_page >= total_pages %}pointer-events-none opacity-50{% endif %}">
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </nav>

@@ -945,6 +945,28 @@ def register():
 @app.route("/view_history")
 @login_required(role="teacher")
 def view_history():
+    # Date range filtering
+    start_date_str = request.args.get("start_date")
+    end_date_str = request.args.get("end_date")
+
+    try:
+        start_date = (
+            datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            if start_date_str
+            else None
+        )
+    except ValueError:
+        start_date = None
+
+    try:
+        end_date = (
+            datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            if end_date_str
+            else None
+        )
+    except ValueError:
+        end_date = None
+
     history_ref = db.reference("History")
     history_data = history_ref.get()  # Fetch data from Firebase
 
@@ -968,6 +990,26 @@ def view_history():
     # Sort entries by checkout time (latest first)
     records.sort(key=lambda x: parse_dt(x.get("time_out") or x.get("time_in") or ""), reverse=True)
 
+    # Filter by date range if provided
+    if start_date or end_date:
+        filtered = []
+        for r in records:
+            matched = False
+            for key in ("time_out", "time_in"):
+                dt = parse_dt(r.get(key))
+                if dt == datetime.min:
+                    continue
+                d = dt.date()
+                if start_date and d < start_date:
+                    continue
+                if end_date and d > end_date:
+                    continue
+                matched = True
+                break
+            if matched:
+                filtered.append(r)
+        records = filtered
+
     per_page = 10
     page = request.args.get("page", 1, type=int)
     total_pages = max(1, math.ceil(len(records) / per_page))
@@ -981,6 +1023,8 @@ def view_history():
         history=page_records,
         total_pages=total_pages,
         current_page=page,
+        start_date=start_date_str,
+        end_date=end_date_str,
         now=datetime.now(),
     )
 
