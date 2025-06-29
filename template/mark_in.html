@@ -72,22 +72,36 @@
                 <p class="text-center text-surface-600 dark:text-surface-300 mb-4">
                     Position the student's face within the frame
                 </p>
-                <div class="flex items-center justify-center space-x-6">
-                    <label class="inline-flex items-center space-x-2 cursor-pointer">
-                        <div class="relative">
-                            <input type="checkbox" id="auto-capture" class="sr-only">
-                            <div class="toggle-bg h-6 w-11 rounded-full border border-surface-300 dark:border-surface-600"></div>
-                        </div>
-                        <span class="text-sm font-medium text-surface-700 dark:text-surface-300">Auto-capture</span>
+            
+                <div class="flex items-center justify-center gap-6 mt-4">
+                    <!-- Auto-capture toggle -->
+                    <label for="auto-capture" class="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            id="auto-capture"
+                            class="w-4 h-4 text-primary-500 bg-surface-100 border-surface-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-surface-800 focus:ring-2 dark:bg-surface-700 dark:border-surface-600"
+                        >
+                        <span class="text-sm font-medium text-surface-700 dark:text-surface-300">
+                            Auto-capture
+                        </span>
                     </label>
-                    <button id="switch-camera" class="text-sm font-medium text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 flex items-center transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            
+                    <!-- Switch-camera button -->
+                    <button
+                        id="switch-camera"
+                        class="flex items-center text-sm font-medium
+                               text-primary-500 hover:text-primary-600 dark:hover:text-primary-400
+                               transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
                         Switch Camera
                     </button>
                 </div>
             </div>
+            
         </div>
 
         <!-- Upload Fallback Section -->
@@ -229,20 +243,6 @@
     .dot-bl { bottom: 15%; left: 15%; transform: translate(-50%, 50%); }
     .dot-br { bottom: 15%; right: 15%; transform: translate(50%, 50%); }
 
-    /* Toggle Switch */
-    .toggle-bg:after {
-        content: '';
-        @apply absolute top-0.5 left-0.5 bg-white border border-surface-300 rounded-full h-5 w-5 transition shadow-sm;
-    }
-    
-    input:checked + .toggle-bg {
-        @apply bg-primary-500 border-primary-500;
-    }
-    
-    input:checked + .toggle-bg:after {
-        @apply transform translate-x-5;
-    }
-
     /* Animations */
     .pulse-animation {
         animation: pulse 2s infinite;
@@ -332,17 +332,107 @@
     });
 
     // Auto Capture
+    let autoCaptureEnabled = false;
+    let autoCaptureInterval = null;
+    let isProcessing = false;
+
     document.getElementById('auto-capture').addEventListener('change', function(e) {
-        if (e.target.checked) {
-            // Implement auto-capture logic here
-            console.log("Auto-capture enabled");
+        autoCaptureEnabled = e.target.checked;
+        
+        if (autoCaptureEnabled) {
+            // Start auto-capture monitoring
+            startAutoCapture();
+            showToast({ 
+                message: "Auto-capture enabled. Position your face in the frame.", 
+                type: 'info',
+                duration: 2000
+            });
+        } else {
+            // Stop auto-capture monitoring
+            stopAutoCapture();
+            showToast({ 
+                message: "Auto-capture disabled.", 
+                type: 'info',
+                duration: 1500
+            });
         }
     });
+
+    function startAutoCapture() {
+        if (autoCaptureInterval) {
+            clearInterval(autoCaptureInterval);
+        }
+        
+        autoCaptureInterval = setInterval(() => {
+            if (autoCaptureEnabled && !isProcessing) {
+                checkForFace();
+            }
+        }, 1000); // Check every second
+    }
+
+    function stopAutoCapture() {
+        if (autoCaptureInterval) {
+            clearInterval(autoCaptureInterval);
+            autoCaptureInterval = null;
+        }
+    }
+
+    function checkForFace() {
+        const video = document.getElementById('video');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw the video frame to canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Simple face detection using image data analysis
+        // This is a basic implementation - in a real app you'd use a proper face detection library
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Check if there's significant variation in the center area (indicating a face)
+        const centerX = Math.floor(canvas.width / 2);
+        const centerY = Math.floor(canvas.height / 2);
+        const radius = Math.min(canvas.width, canvas.height) / 4;
+        
+        let hasVariation = false;
+        let sampleCount = 0;
+        
+        for (let y = centerY - radius; y < centerY + radius; y += 10) {
+            for (let x = centerX - radius; x < centerX + radius; x += 10) {
+                if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
+                    const index = (y * canvas.width + x) * 4;
+                    const brightness = (data[index] + data[index + 1] + data[index + 2]) / 3;
+                    sampleCount++;
+                    
+                    if (brightness > 50 && brightness < 200) { // Reasonable brightness range
+                        hasVariation = true;
+                        break;
+                    }
+                }
+            }
+            if (hasVariation) break;
+        }
+        
+        // If we detect potential face presence and have enough samples
+        if (hasVariation && sampleCount > 10 && !isProcessing) {
+            console.log("Face detected, auto-capturing...");
+            captureImage();
+        }
+    }
 
     // Capture Button
     document.getElementById('capture-button').addEventListener('click', captureImage);
 
     async function captureImage() {
+        if (isProcessing) {
+            return; // Prevent multiple simultaneous captures
+        }
+        
+        isProcessing = true;
+        
         const modal = document.getElementById('processing-modal');
         const modalContent = modal.querySelector('.transform');
         modal.classList.remove('hidden');
@@ -409,6 +499,8 @@
                 duration: 3000
             });
             console.error('Error:', error);
+        } finally {
+            isProcessing = false;
         }
     }
 
