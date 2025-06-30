@@ -41,11 +41,14 @@
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-colors duration-300
                             {% if request.status == 'Approved' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
                             {% elif request.status == 'Rejected' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                            {% elif request.status == 'Expired' %}bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200
                             {% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% endif %}">
                             {% if request.status == 'Approved' %}
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             {% elif request.status == 'Rejected' %}
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            {% elif request.status == 'Expired' %}
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>
                             {% else %}
                                 <svg class="w-4 h-4 mr-1 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>
                             {% endif %}
