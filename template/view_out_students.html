@@ -3,27 +3,45 @@
 {% block title %}Students Currently Out{% endblock %}
 
 {% block content %}
-    <!-- Main Content -->
-    <h1 class="text-3xl font-bold text-surface-800 dark:text-surface-100 mb-8 mt-8">Students Currently Marked Out</h1>
+<div class="container mx-auto px-4 py-8 min-h-screen flex flex-col">
+    <!-- Header: Title and Description -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-surface-800 dark:text-surface-100 mb-1">Students Currently Out</h1>
+            <p class="text-surface-500 dark:text-surface-400">Students currently outside campus premises</p>
+        </div>
+        <!-- Optional: Search/filter bar for future extensibility -->
+        <form method="get" action="{{ url_for('view_out_students') }}" class="flex items-center bg-surface-50 dark:bg-surface-800 rounded-lg p-2 shadow-xs w-full md:w-auto">
+            <input type="text" name="search" value="{{ search or '' }}" placeholder="Search students..." class="form-input pl-10 pr-4 h-10 md:h-11 w-full md:w-60" />
+            <button type="submit" class="absolute left-3 top-3 text-surface-400">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+    </div>
 
     {% if out_students %}
-    <div class="overflow-x-auto shadow-soft dark:shadow-soft-dark rounded-xl mb-8">
-        <table class="min-w-full bg-white dark:bg-surface-800">
-            <thead class="bg-surface-100 dark:bg-surface-700">
+    <div class="rounded-xl shadow-lg bg-white dark:bg-surface-800 overflow-x-auto">
+        <table class="min-w-full divide-y divide-surface-200 dark:divide-surface-700">
+            <thead class="bg-surface-100 dark:bg-surface-700 sticky top-0 z-10">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Student ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-surface-700 dark:text-surface-300 uppercase tracking-wider">Marked Out At</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-surface-700 dark:text-surface-200 uppercase tracking-wider">Student ID</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-surface-700 dark:text-surface-200 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-surface-700 dark:text-surface-200 uppercase tracking-wider">Marked Out At</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-surface-200 dark:divide-surface-700">
                 {% for student_id, student_info in out_students.items() %}
-                <tr class="  transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ student_info['rollNumber'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">{{ student_info['name'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700 dark:text-surface-300">
-                        {%- set t = student_info['time_out'] -%}
-                        {{ t[11:16] if t and t|length >= 16 else t }}
+                <tr class="transition-all duration-300 ease-in-out hover:bg-surface-300 dark:hover:bg-surface-900 hover:shadow-xl">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-800 dark:text-surface-100">{{ student_info['rollNumber'] }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-600 dark:text-surface-300">{{ student_info['name'] }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-600 dark:text-surface-300 font-mono">
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-surface-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {%- set t = student_info['time_out'] -%}
+                            {{ t[11:16] if t and t|length >= 16 else t }}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -31,23 +49,37 @@
         </table>
     </div>
     {% else %}
-    <div class="card p-6 text-center mb-8">
-        <p class="text-surface-600 dark:text-surface-300">No students are currently marked out.</p>
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center py-20 md:py-32 text-center">
+        <div class="w-48 h-48 mb-8 text-surface-300 dark:text-surface-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <h3 class="text-2xl font-medium text-surface-700 dark:text-surface-300 mb-3">All students accounted for</h3>
+        <p class="text-surface-500 dark:text-surface-400 mb-8 max-w-md">No students are currently marked out of campus</p>
+        <a href="{{ url_for('view_out_students') }}" class="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors">
+            <i class="fas fa-sync-alt mr-2"></i> Refresh Data
+        </a>
     </div>
     {% endif %}
 
-    <a href="{{ url_for('home') }}" class="btn-primary inline-flex items-center px-4 py-2">
-        Back to Home
-    </a>
+    <div class="mt-10 flex justify-center">
+        <a href="{{ url_for('home') }}" class="btn-primary inline-flex items-center px-6 py-3 transition-transform hover:scale-[1.02]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Home
+        </a>
+    </div>
+</div>
 
 <style>
-    @keyframes marquee {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
+    .shadow-xs {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
-    .animate-marquee {
-        display: inline-block;
-        animation: marquee 15s linear infinite;
+    .shadow-sm {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 </style>
 {% endblock %}
