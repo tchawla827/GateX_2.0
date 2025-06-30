@@ -868,17 +868,33 @@ def mark_in():
 @login_required(role="teacher")
 def view_out_students():
     try:
+        search_query = request.args.get("search", "")
 
         out_students_ref = db.reference("Out Students")
 
         out_students = out_students_ref.get()
 
-        if out_students is None:
+        if not out_students:
             out_students = {}
 
-        return render_template("view_out_students.html", out_students=out_students,now=datetime.now())
-    except Exception as e:
+        if search_query:
+            s = search_query.lower()
+            filtered = {}
+            for key, info in out_students.items():
+                name = str(info.get("name", "")).lower()
+                roll = str(info.get("rollNumber", "")).lower()
+                phone = str(info.get("phone", "")).lower()
+                if s in name or s in roll or s in phone:
+                    filtered[key] = info
+            out_students = filtered
 
+        return render_template(
+            "view_out_students.html",
+            out_students=out_students,
+            search=search_query,
+            now=datetime.now(),
+        )
+    except Exception as e:
         return f"An error occurred: {str(e)}"
 
 
