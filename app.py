@@ -831,7 +831,21 @@ def student_dashboard(roll_number):
     request_list = []
     if requests:
         for key, value in requests.items():
+            if value.get("outgoing_date") and value.get("outgoing_time"):
+                try:
+                    value["_sort_dt"] = datetime.strptime(
+                        f"{value['outgoing_date']} {value['outgoing_time']}",
+                        "%Y-%m-%d %H:%M",
+                    )
+                except ValueError:
+                    value["_sort_dt"] = datetime.min
+            else:
+                value["_sort_dt"] = datetime.min
             request_list.append(value)
+
+        request_list.sort(key=lambda x: x.get("_sort_dt", datetime.min), reverse=True)
+        for item in request_list:
+            item.pop("_sort_dt", None)
 
     return render_template(
         "student_dashboard.html", student=student, requests=request_list,now=datetime.now()
