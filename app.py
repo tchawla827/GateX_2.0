@@ -295,12 +295,41 @@ def upload():
         return redirect(url_for("register"))
 
     if file and allowed_file(file.filename):
+        # decode image for duplicate check
+        npimg = np.frombuffer(file.read(), np.uint8)
+        frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+        # Build database of embeddings
+        students_data = db.reference("Students").get()
+        database = {}
+        if isinstance(students_data, list):
+            for studentInfo in students_data:
+                if studentInfo:
+                    name = studentInfo.get("name")
+                    emb = studentInfo.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+        elif isinstance(students_data, dict):
+            for _id, info in students_data.items():
+                if info:
+                    name = info.get("name")
+                    emb = info.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+
+        match = match_with_database(frame, database)
+        if match and "Match found" in match:
+            student_name = match.split(": ")[-1]
+            flash(f"{student_name} is already registered.", "error")
+            return redirect(url_for("register"))
+
+        # reset stream pointer to save file
+        file.stream.seek(0)
 
         filename = secure_filename(file.filename)
 
         ref = db.reference("Students")
         try:
-
             studentId = len(ref.get())
         except TypeError:
             studentId = 1
@@ -651,18 +680,38 @@ def capture():
     if frame is None:
         frame = current_frame
     if frame is not None:
-
         ref = db.reference("Students")
 
+        # build embedding database
+        students_data = ref.get()
+        database = {}
+        if isinstance(students_data, list):
+            for studentInfo in students_data:
+                if studentInfo:
+                    name = studentInfo.get("name")
+                    emb = studentInfo.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+        elif isinstance(students_data, dict):
+            for _id, info in students_data.items():
+                if info:
+                    name = info.get("name")
+                    emb = info.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+
+        match = match_with_database(frame, database)
+        if match and "Match found" in match:
+            student_name = match.split(": ")[-1]
+            flash(f"{student_name} is already registered.", "error")
+            return redirect(url_for("register"))
+
         try:
-
-            studentId = len(ref.get())
-
+            studentId = len(students_data)
         except TypeError:
             studentId = 1
 
         filename = f"{studentId}.png"
-
         cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
 
         val, err = upload_database(filename)
