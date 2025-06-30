@@ -295,12 +295,41 @@ def upload():
         return redirect(url_for("register"))
 
     if file and allowed_file(file.filename):
+        # decode image for duplicate check
+        npimg = np.frombuffer(file.read(), np.uint8)
+        frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+        # Build database of embeddings
+        students_data = db.reference("Students").get()
+        database = {}
+        if isinstance(students_data, list):
+            for studentInfo in students_data:
+                if studentInfo:
+                    name = studentInfo.get("name")
+                    emb = studentInfo.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+        elif isinstance(students_data, dict):
+            for _id, info in students_data.items():
+                if info:
+                    name = info.get("name")
+                    emb = info.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+
+        match = match_with_database(frame, database)
+        if match and "Match found" in match:
+            student_name = match.split(": ")[-1]
+            flash(f"{student_name} is already registered.", "error")
+            return redirect(url_for("register"))
+
+        # reset stream pointer to save file
+        file.stream.seek(0)
 
         filename = secure_filename(file.filename)
 
         ref = db.reference("Students")
         try:
-
             studentId = len(ref.get())
         except TypeError:
             studentId = 1
@@ -343,13 +372,21 @@ def uploaded_file(filename):
 def markin():
     global filename, detection
     frame = None
-    if request.is_json:
+    # If an image file was uploaded via the form, use that
+    if "file" in request.files and request.files["file"].filename:
+        file = request.files["file"]
+        npimg = np.frombuffer(file.read(), np.uint8)
+        frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+    # Otherwise expect a JSON payload from the camera feed
+    if frame is None and request.is_json:
         data = request.get_json(silent=True)
-        if data and 'image' in data:
+        if data and "image" in data:
             try:
-                frame = b64_to_cv2(data['image'])
+                frame = b64_to_cv2(data["image"])
             except Exception as e:
                 app.logger.error(f"Failed to decode image data: {e}")
+
     if frame is None:
         frame = current_frame
 
@@ -404,21 +441,33 @@ def markin():
                     history_ref.child(latest_entry_key).update({"time_in": str(datetime.now())})
                     print(f"Updated history for {student_name} with time_in.")
 
+                if "file" in request.files:
+                    flash(f"{student_name} has been marked in successfully!", "success")
+                    return redirect(url_for("home"))
                 return {
                     "status": "success",
                     "message": f"{student_name} has been marked in successfully!",
                 }, 200
             else:
                 print(f"{student_name} is not marked out.")
+                if "file" in request.files:
+                    flash(f"{student_name} is not currently marked out.", "error")
+                    return redirect(url_for("mark_in"))
                 return {
                     "status": "error",
                     "message": f"{student_name} is not currently marked out.",
                 }, 400
         else:
             print("No matching student found.")
+            if "file" in request.files:
+                flash("No matching student found.", "error")
+                return redirect(url_for("mark_in"))
             return {"status": "error", "message": "No matching student found."}, 400
 
     print("Error capturing image.")
+    if "file" in request.files:
+        flash("Error capturing image", "error")
+        return redirect(url_for("mark_in"))
     return {"status": "error", "message": "Error capturing image"}, 500
 
 
@@ -429,13 +478,20 @@ def markin():
 def markout():
     global filename, detection
     frame = None
-    if request.is_json:
+    # Use uploaded file if provided
+    if "file" in request.files and request.files["file"].filename:
+        file = request.files["file"]
+        npimg = np.frombuffer(file.read(), np.uint8)
+        frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+    if frame is None and request.is_json:
         data = request.get_json(silent=True)
-        if data and 'image' in data:
+        if data and "image" in data:
             try:
-                frame = b64_to_cv2(data['image'])
+                frame = b64_to_cv2(data["image"])
             except Exception as e:
                 app.logger.error(f"Failed to decode image data: {e}")
+
     if frame is None:
         frame = current_frame
 
@@ -524,6 +580,9 @@ def markout():
                         break
 
             if not has_approved_request:
+                if "file" in request.files:
+                    flash("No approved outpass request found for today.", "error")
+                    return redirect(url_for("mark_out"))
                 return {
                     "status": "error",
                     "message": "No approved outpass request found for today.",
@@ -532,6 +591,9 @@ def markout():
             out_students_ref = db.reference("Out Students")
 
             if out_students_ref.child(student_name).get() is not None:
+                if "file" in request.files:
+                    flash(f"{student_name} is already marked out.", "error")
+                    return redirect(url_for("mark_out"))
                 return {
                     "status": "error",
                     "message": f"{student_name} is already marked out.",
@@ -576,6 +638,9 @@ def markout():
             )
 
             print("Successfully added student to 'Out Students' and 'History'.")
+            if "file" in request.files:
+                flash(f"{student_name} (Roll No: {rollNumber}) marked out successfully!", "success")
+                return redirect(url_for("home"))
             return {
                 "status": "success",
                 "message": f"{student_name} (Roll No: {rollNumber}) marked out successfully!",
@@ -583,12 +648,18 @@ def markout():
 
         else:
             print("No matching student found or no face detected.")
+            if "file" in request.files:
+                flash("No face detected or student not recognized.", "error")
+                return redirect(url_for("mark_out"))
             return {
                 "status": "error",
                 "message": "No face detected or student not recognized.",
             }, 404
 
     print("Error capturing image.")
+    if "file" in request.files:
+        flash("Error capturing image", "error")
+        return redirect(url_for("mark_out"))
     return {"status": "error", "message": "Error capturing image"}, 500
 
 
@@ -609,18 +680,38 @@ def capture():
     if frame is None:
         frame = current_frame
     if frame is not None:
-
         ref = db.reference("Students")
 
+        # build embedding database
+        students_data = ref.get()
+        database = {}
+        if isinstance(students_data, list):
+            for studentInfo in students_data:
+                if studentInfo:
+                    name = studentInfo.get("name")
+                    emb = studentInfo.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+        elif isinstance(students_data, dict):
+            for _id, info in students_data.items():
+                if info:
+                    name = info.get("name")
+                    emb = info.get("embeddings")
+                    if name and emb:
+                        database[name] = emb
+
+        match = match_with_database(frame, database)
+        if match and "Match found" in match:
+            student_name = match.split(": ")[-1]
+            flash(f"{student_name} is already registered.", "error")
+            return redirect(url_for("register"))
+
         try:
-
-            studentId = len(ref.get())
-
+            studentId = len(students_data)
         except TypeError:
             studentId = 1
 
         filename = f"{studentId}.png"
-
         cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
 
         val, err = upload_database(filename)
