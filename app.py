@@ -920,21 +920,41 @@ def admin_review():
     if outpass_requests:
         for key, value in outpass_requests.items():
             value["id"] = key
-            # Convert outgoing_date to a datetime object for sorting, if present
-            if "outgoing_date" in value:
-                value["outgoing_datetime"] = datetime.strptime(value["outgoing_date"], "%Y-%m-%d")
+            # Parse outgoing date and time for sorting
+            if value.get("outgoing_date") and value.get("outgoing_time"):
+                try:
+                    value["_sort_dt"] = datetime.strptime(
+                        f"{value['outgoing_date']} {value['outgoing_time']}",
+                        "%Y-%m-%d %H:%M",
+                    )
+                except ValueError:
+                    value["_sort_dt"] = datetime.min
+            elif value.get("outgoing_date"):
+                try:
+                    value["_sort_dt"] = datetime.strptime(
+                        value["outgoing_date"], "%Y-%m-%d"
+                    )
+                except ValueError:
+                    value["_sort_dt"] = datetime.min
             else:
-                value["outgoing_datetime"] = datetime.max  # Use a max date if not present
+                value["_sort_dt"] = datetime.min
             request_list.append(value)
 
-    # Sort by status ('Pending' first) and then by outgoing date (earliest date first)
-    request_list.sort(
-        key=lambda x: (x["status"] != "Pending", x["outgoing_datetime"])
-    )
+    # First sort by outgoing datetime (latest first)
+    request_list.sort(key=lambda x: x.get("_sort_dt", datetime.min), reverse=True)
 
-    # Remove the temporary outgoing_datetime key after sorting
+    # Then stable sort by status priority
+    status_priority = {
+        "Pending": 0,
+        "Expired": 1,
+        "Rejected": 2,
+        "Approved": 3,
+    }
+    request_list.sort(key=lambda x: status_priority.get(x.get("status"), 99))
+
+    # Remove the temporary sorting key
     for req_item in request_list:
-        req_item.pop("outgoing_datetime", None)
+        req_item.pop("_sort_dt", None)
 
     return render_template("admin_review.html", requests=request_list,now=datetime.now())
 
