@@ -91,33 +91,26 @@ def add_cache_control_headers(response):
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+def get_next_student_filename():
+    """
+    Finds the next available integer filename (e.g., 1.png, 2.png, ...) in the static/images folder.
+    Returns the filename as a string.
+    """
+    folder = app.config["UPLOAD_FOLDER"]
+    existing_files = set()
+    for fname in os.listdir(folder):
+        if fname.endswith('.png') and fname[:-4].isdigit():
+            existing_files.add(int(fname[:-4]))
+    next_id = 1
+    while next_id in existing_files:
+        next_id += 1
+    return f"{next_id}.png"
 
 def upload_database(filename):
-    """
-    Checks if a file with the given filename already exists in the
-    database storage, and if not, uploads the file to the database.
-    """
-    valid = False
-
-    try:
-        cloudinary.api.resource(filename)
-        valid = True
-        error = f"{filename} already exists in the database"
-    except cloudinary.exceptions.NotFound:
-        pass
-
-    if not filename[:-4].isdigit():
-        valid = True
-        error = f"Please make sure that the name of the {filename} is a number"
-
-    if not valid:
-
-        filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        cloudinary.uploader.upload(filename, public_id=os.path.basename(filename))
-        error = None
-        flash("Image uploaded successfully", "success")
-
-    return valid, error
+    filename_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    cloudinary.uploader.upload(filename_path, public_id=os.path.basename(filename), overwrite=True)
+    flash("Image uploaded successfully", "success")
+    return False, None
 
 def b64_to_cv2(data_url: str):
     header, b64_data = data_url.split(',', 1)
@@ -295,26 +288,19 @@ def upload():
         return redirect(url_for("register"))
 
     if file and allowed_file(file.filename):
-
-        filename = secure_filename(file.filename)
-
-        ref = db.reference("Students")
-        try:
-
-            studentId = len(ref.get())
-        except TypeError:
-            studentId = 1
-
-        filename = f"{studentId}.png"
-
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-
+        # Read the uploaded file as an image using OpenCV
+        npimg = np.frombuffer(file.read(), np.uint8)
+        frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+        if frame is None:
+            flash("Invalid image file.", "error")
+            return redirect(url_for("register"))
+        # Use the helper to get a unique filename
+        filename = get_next_student_filename()
+        cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
         val, err = upload_database(filename)
-
         if val:
             flash(err, "error")
             return redirect(url_for("register"))
-
         return redirect(url_for("add_info"))
 
     flash("File upload failed", "error")
