@@ -275,8 +275,7 @@ def teacher_login():
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    global filename
-
+    
     if "file" not in request.files:
         flash("No file uploaded", "error")
         return redirect(url_for("register"))
@@ -296,6 +295,7 @@ def upload():
             return redirect(url_for("register"))
         # Use the helper to get a unique filename
         filename = get_next_student_filename()
+        session["registration_filename"] = filename
         cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
         val, err = upload_database(filename)
         if val:
@@ -327,7 +327,7 @@ def uploaded_file(filename):
 @app.route("/markin", methods=["POST"])
 @login_required(role="teacher")
 def markin():
-    global filename, detection
+    global detection
     frame = None
     # If an image file was uploaded via the form, use that
     if "file" in request.files and request.files["file"].filename:
@@ -433,7 +433,7 @@ def markin():
 @app.route("/markout", methods=["POST"])
 @login_required(role="teacher")
 def markout():
-    global filename, detection
+    global detection
     frame = None
     # Use uploaded file if provided
     if "file" in request.files and request.files["file"].filename:
@@ -630,7 +630,6 @@ def markout():
 
 @app.route("/capture", methods=["POST"])
 def capture():
-    global filename
     frame = None
     if request.is_json:
         data = request.get_json(silent=True)
@@ -653,6 +652,7 @@ def capture():
             studentId = 1
 
         filename = f"{studentId}.png"
+        session["registration_filename"] = filename
 
         cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
 
@@ -676,9 +676,9 @@ def success(filename):
 
 @app.route("/submit_info", methods=["POST"])
 def submit_info():
-    global filename
     try:
-        if "filename" not in globals():
+        filename = session.get("registration_filename")
+        if not filename:
             flash("Please capture a face image before submitting your information.", "error")
             return redirect(url_for("register"))
 
@@ -742,6 +742,7 @@ def submit_info():
         for key, value in student_data.items():
             ref.child(key).set(value)
 
+        session.pop("registration_filename", None)
         return redirect(url_for("success", filename=filename))
 
     except Exception as e:
