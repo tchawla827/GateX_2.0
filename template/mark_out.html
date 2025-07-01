@@ -330,6 +330,7 @@
     let autoCaptureEnabled = false;
     let autoCaptureInterval = null;
     let isProcessing = false;
+    let lastCaptureTime = 0;
 
     document.getElementById('auto-capture').addEventListener('change', function(e) {
         autoCaptureEnabled = e.target.checked;
@@ -373,6 +374,8 @@
     }
 
     function checkForFace() {
+        const now = Date.now();
+        if (now - lastCaptureTime < 5000) return;
         const video = document.getElementById('video');
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
@@ -427,6 +430,7 @@
         }
         
         isProcessing = true;
+        lastCaptureTime = Date.now();
         
         const modal = document.getElementById('processing-modal');
         const modalContent = modal.querySelector('.transform');
@@ -468,14 +472,16 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
             
             if (data.status === 'success') {
-                showToast({ 
-                    message: data.message, 
+                showToast({
+                    message: data.message,
                     type: 'success',
                     duration: 3000
                 });
-                setTimeout(() => {
-                    window.location.href = '{{ url_for("home") }}';
-                }, 1500);
+                if (!autoCaptureEnabled) {
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for("home") }}';
+                    }, 1500);
+                }
             } else {
                 showToast({ 
                     message: data.message, 
