@@ -13,6 +13,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from jinja2 import select_autoescape, FileSystemLoader
 from flask_socketio import SocketIO, emit
+import tempfile
 import base64
 import numpy as np
 from functools import wraps
@@ -91,6 +92,33 @@ def add_cache_control_headers(response):
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+def create_temp_dir():
+    """Creates a writable temp directory for image storage."""
+    temp_dir = tempfile.mkdtemp()
+    print(f"Temporary directory created: {temp_dir}")
+    return temp_dir
+
+def upload_image_array(img_bgr: "numpy.ndarray", public_id: str):
+    """
+    Upload a BGR image held in memory to Cloudinary using a temporary directory.
+    """
+    temp_dir = create_temp_dir()
+    temp_filename = os.path.join(temp_dir, f"{public_id}.png")
+    ok, buf = cv2.imencode('.png', img_bgr)
+    if not ok:
+        raise RuntimeError("cv2.imencode failed")
+    with open(temp_filename, 'wb') as f:
+        f.write(buf.tobytes())
+    cloudinary_response = cloudinary.uploader.upload(
+        temp_filename,
+        public_id=public_id,
+        overwrite=True,
+        resource_type="image",
+    )
+    os.remove(temp_filename)
+    os.rmdir(temp_dir)
+    return cloudinary_response
+
 def get_next_student_filename():
     """
     Finds the next available integer filename (e.g., 1.png, 2.png, ...) in the static/images folder.
@@ -108,7 +136,11 @@ def get_next_student_filename():
 
 def upload_database(filename):
     filename_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    cloudinary.uploader.upload(filename_path, public_id=os.path.basename(filename), overwrite=True)
+    img = cv2.imread(filename_path)
+    if img is None:
+        flash("Image not found for upload", "error")
+        return True, "Image not found"
+    upload_image_array(img, os.path.basename(filename))
     flash("Image uploaded successfully", "success")
     return False, None
 
@@ -297,9 +329,10 @@ def upload():
         # Use the helper to get a unique filename
         filename = get_next_student_filename()
         cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
-        val, err = upload_database(filename)
-        if val:
-            flash(err, "error")
+        try:
+            upload_image_array(frame, filename)
+        except Exception as e:
+            flash(str(e), "error")
             return redirect(url_for("register"))
         return redirect(url_for("add_info"))
 
@@ -656,10 +689,10 @@ def capture():
 
         cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
 
-        val, err = upload_database(filename)
-
-        if val:
-            flash(err, "error")
+        try:
+            upload_image_array(frame, filename)
+        except Exception as e:
+            flash(str(e), "error")
             return redirect(url_for("register"))
 
     return redirect(url_for("add_info"))
