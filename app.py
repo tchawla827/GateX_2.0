@@ -10,8 +10,9 @@ from flask import (
     session,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-from werkzeug.utils import secure_filename
 from jinja2 import select_autoescape, FileSystemLoader
+import io
+import uuid
 from flask_socketio import SocketIO, emit
 import base64
 import numpy as np
@@ -88,29 +89,18 @@ def add_cache_control_headers(response):
     response.headers["Expires"] = "0"
     return response
 
-UPLOAD_FOLDER = "static/images"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-def get_next_student_filename():
-    """
-    Finds the next available integer filename (e.g., 1.png, 2.png, ...) in the static/images folder.
-    Returns the filename as a string.
-    """
-    folder = app.config["UPLOAD_FOLDER"]
-    existing_files = set()
-    for fname in os.listdir(folder):
-        if fname.endswith('.png') and fname[:-4].isdigit():
-            existing_files.add(int(fname[:-4]))
-    next_id = 1
-    while next_id in existing_files:
-        next_id += 1
-    return f"{next_id}.png"
+# Store captured image information in memory until registration completes
+captured_frame = None
+captured_image_url = None
+recognized_image_url = None
 
-def upload_database(filename):
-    filename_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    cloudinary.uploader.upload(filename_path, public_id=os.path.basename(filename), overwrite=True)
-    flash("Image uploaded successfully", "success")
-    return False, None
+def upload_to_cloudinary(frame: np.ndarray) -> str:
+    """Upload a BGR image frame to Cloudinary and return the hosted URL."""
+    _, buffer = cv2.imencode(".png", frame)
+    data = io.BytesIO(buffer.tobytes())
+    result = cloudinary.uploader.upload(data, public_id=str(uuid.uuid4()), overwrite=True)
+    return result.get("secure_url")
 
 def b64_to_cv2(data_url: str):
     header, b64_data = data_url.split(',', 1)
@@ -147,14 +137,14 @@ def match_with_database(img, database):
     """The function "match_with_database" takes an image and a database as input, detects faces in the
     image, aligns and extracts features from each face, and matches the face to a face in the database.
     """
-    global match
+    global match, recognized_image_url
 
     faces = detect_faces(img)
 
     for x, y, w, h in faces:
         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 4)
 
-    cv2.imwrite("static/recognized/recognized.png", img)
+    recognized_image_url = upload_to_cloudinary(img)
 
     for face in faces:
         try:
@@ -275,7 +265,7 @@ def teacher_login():
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    global filename
+    global captured_frame, captured_image_url
 
     if "file" not in request.files:
         flash("No file uploaded", "error")
@@ -288,19 +278,14 @@ def upload():
         return redirect(url_for("register"))
 
     if file and allowed_file(file.filename):
-        # Read the uploaded file as an image using OpenCV
         npimg = np.frombuffer(file.read(), np.uint8)
         frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         if frame is None:
             flash("Invalid image file.", "error")
             return redirect(url_for("register"))
-        # Use the helper to get a unique filename
-        filename = get_next_student_filename()
-        cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
-        val, err = upload_database(filename)
-        if val:
-            flash(err, "error")
-            return redirect(url_for("register"))
+        captured_frame = frame
+        captured_image_url = upload_to_cloudinary(frame)
+        flash("Image uploaded successfully", "success")
         return redirect(url_for("add_info"))
 
     flash("File upload failed", "error")
@@ -327,7 +312,7 @@ def uploaded_file(filename):
 @app.route("/markin", methods=["POST"])
 @login_required(role="teacher")
 def markin():
-    global filename, detection
+    global detection
     frame = None
     # If an image file was uploaded via the form, use that
     if "file" in request.files and request.files["file"].filename:
@@ -433,7 +418,7 @@ def markin():
 @app.route("/markout", methods=["POST"])
 @login_required(role="teacher")
 def markout():
-    global filename, detection
+    global detection
     frame = None
     # Use uploaded file if provided
     if "file" in request.files and request.files["file"].filename:
@@ -561,15 +546,7 @@ def markout():
                     "message": f"{student_name} is already marked out.",
                 }, 400
 
-            try:
-                student_count = (
-                    len(out_students_ref.get()) if out_students_ref.get() else 0
-                )
-            except TypeError:
-                student_count = 0
-
-            filename = f"{student_count}.png"
-            cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
+            image_url = upload_to_cloudinary(frame)
 
             # Mark student as out and store in 'Out Students'
             out_students_ref.child(student_name).set(
@@ -579,7 +556,7 @@ def markout():
                     "class": student_class,
                     "phone": phoneNumber,  # Store phone number
                     "time_out": str(datetime.now()),
-                    "image_filename": filename,
+                    "image_url": image_url,
                 }
             )
 
@@ -630,7 +607,7 @@ def markout():
 
 @app.route("/capture", methods=["POST"])
 def capture():
-    global filename
+    global captured_frame, captured_image_url
     frame = None
     if request.is_json:
         data = request.get_json(silent=True)
@@ -642,49 +619,24 @@ def capture():
     if frame is None:
         frame = current_frame
     if frame is not None:
-
-        ref = db.reference("Students")
-
-        try:
-
-            studentId = len(ref.get())
-
-        except TypeError:
-            studentId = 1
-
-        filename = f"{studentId}.png"
-
-        cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
-
-        val, err = upload_database(filename)
-
-        if val:
-            flash(err, "error")
-            return redirect(url_for("register"))
+        captured_frame = frame
+        captured_image_url = upload_to_cloudinary(frame)
 
     return redirect(url_for("add_info"))
 
 
-@app.route("/success/<filename>")
-def success(filename):
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-
-    url = url_for("static", filename="images/" + filename, v=timestamp)
-
-    return f'<h1>{filename} image uploaded successfully to the database</h1><img src="{url}" alt="Uploaded image">'
+@app.route("/success")
+def success():
+    image_url = request.args.get("image_url")
+    return f'<h1>Image uploaded successfully to the database</h1><img src="{image_url}" alt="Uploaded image">'
 
 
 @app.route("/submit_info", methods=["POST"])
 def submit_info():
-    global filename
+    global captured_frame, captured_image_url
     try:
-        if "filename" not in globals():
+        if captured_frame is None or captured_image_url is None:
             flash("Please capture a face image before submitting your information.", "error")
-            return redirect(url_for("register"))
-
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        if not os.path.exists(file_path):
-            flash("Image not found. Please capture or upload again.", "error")
             return redirect(url_for("register"))
 
         name = request.form.get("name")
@@ -696,8 +648,12 @@ def submit_info():
         password = request.form.get("password")
         hashed_password = generate_password_hash(password)
 
-        studentId, _ = os.path.splitext(filename)
-        data = cv2.imread(file_path)
+        ref = db.reference("Students")
+        try:
+            studentId = len(ref.get()) + 1 if ref.get() else 1
+        except TypeError:
+            studentId = 1
+        data = captured_frame
 
         faces = detect_faces(data)
 
@@ -725,7 +681,6 @@ def submit_info():
             flash("Failed to extract facial features. Please try again.", "error")
             return redirect(url_for("add_info"))
 
-        ref = db.reference("Students")
         student_data = {
             str(studentId): {
                 "name": name,
@@ -735,6 +690,7 @@ def submit_info():
                 "userType": userType,
                 "classes": hostel,
                 "password": hashed_password,
+                "image_url": captured_image_url,
                 "embeddings": embedding[0]["embedding"],
             }
         }
@@ -742,7 +698,7 @@ def submit_info():
         for key, value in student_data.items():
             ref.child(key).set(value)
 
-        return redirect(url_for("success", filename=filename))
+        return redirect(url_for("success", image_url=captured_image_url))
 
     except Exception as e:
         app.logger.exception("Error while submitting info: %s", e)
@@ -775,12 +731,12 @@ def recognize():
 
 @app.route("/select_class", methods=["GET", "POST"])
 def select_class():
+    global recognized_image_url
     if request.method == "POST":
 
         selected_class = request.form.get("classes")
 
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        url = url_for("static", filename="recognized/recognized.png", v=timestamp)
+        url = recognized_image_url
 
         ref = db.reference("Students")
 
