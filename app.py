@@ -27,7 +27,9 @@ from firebase_admin import db
 import cloudinary
 import cloudinary.uploader as cl
 import cloudinary.api
+import cloudinary.utils
 import io
+import requests
 from detection.face_matching import detect_faces, align_face
 from detection.face_matching import extract_features, match_face
 from utils import load_env
@@ -126,6 +128,14 @@ def b64_to_cv2(data_url: str):
     header, b64_data = data_url.split(',', 1)
     jpg_bytes = base64.b64decode(b64_data)
     nparr = np.frombuffer(jpg_bytes, np.uint8)
+    return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+def fetch_image_np(public_id: str):
+    """Download an image from Cloudinary by public ID and return as BGR array."""
+    url, _ = cloudinary.utils.cloudinary_url(public_id, format="png")
+    resp = requests.get(url, timeout=10)
+    resp.raise_for_status()
+    nparr = np.frombuffer(resp.content, np.uint8)
     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
 @socketio.on('video_frame')
@@ -309,7 +319,7 @@ def upload():
         upload_image_array(frame, public_id)
 
         session["registration_filename"] = filename
-        session["registration_image_np"] = frame
+        session["registration_public_id"] = public_id
         return redirect(url_for("add_info"))
 
     flash("File upload failed", "error")
@@ -656,7 +666,7 @@ def capture():
         upload_image_array(frame, public_id)
 
         session["registration_filename"] = filename
-        session["registration_image_np"] = frame
+        session["registration_public_id"] = public_id
 
     return redirect(url_for("add_info"))
 
@@ -678,13 +688,12 @@ def submit_info():
             flash("Please capture a face image before submitting your information.", "error")
             return redirect(url_for("register"))
 
-        if "registration_image_np" in session:
-            data = session["registration_image_np"]
-        elif "registration_image_b64" in session:
-            data = b64_to_cv2("data:image/png;base64," + session["registration_image_b64"])
-        else:
+        public_id = session.get("registration_public_id")
+        if not public_id:
             flash("Image not found in session. Please recapture.", "error")
             return redirect(url_for("register"))
+
+        data = fetch_image_np(public_id)
 
         name = request.form.get("name")
         rollNumber = request.form.get("rollNumber")
@@ -741,8 +750,7 @@ def submit_info():
             ref.child(key).set(value)
 
         session.pop("registration_filename", None)
-        session.pop("registration_image_np", None)
-        session.pop("registration_image_b64", None)
+        session.pop("registration_public_id", None)
         return redirect(url_for("success", filename=filename))
 
     except Exception as e:
