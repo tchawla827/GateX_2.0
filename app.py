@@ -25,8 +25,9 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import cloudinary
-import cloudinary.uploader
+import cloudinary.uploader as cl
 import cloudinary.api
+import io
 from detection.face_matching import detect_faces, align_face
 from detection.face_matching import extract_features, match_face
 from utils import load_env
@@ -106,11 +107,20 @@ def get_next_student_filename():
         next_id += 1
     return f"{next_id}.png"
 
-def upload_database(filename):
-    filename_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    cloudinary.uploader.upload(filename_path, public_id=os.path.basename(filename), overwrite=True)
-    flash("Image uploaded successfully", "success")
-    return False, None
+def upload_image_array(img_bgr: "numpy.ndarray", public_id: str):
+    """
+    Upload a BGR image held in memory to Cloudinary and return
+    Cloudinary's JSON response. Raises RuntimeError if encode fails.
+    """
+    ok, buf = cv2.imencode('.png', img_bgr)
+    if not ok:
+        raise RuntimeError("cv2.imencode failed")
+    return cl.upload(
+        io.BytesIO(buf.tobytes()),
+        public_id=public_id,
+        overwrite=True,
+        resource_type="image",
+    )
 
 def b64_to_cv2(data_url: str):
     header, b64_data = data_url.split(',', 1)
@@ -295,12 +305,11 @@ def upload():
             return redirect(url_for("register"))
         # Use the helper to get a unique filename
         filename = get_next_student_filename()
+        public_id = f"students/{filename[:-4]}"
+        upload_image_array(frame, public_id)
+
         session["registration_filename"] = filename
-        cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
-        val, err = upload_database(filename)
-        if val:
-            flash(err, "error")
-            return redirect(url_for("register"))
+        session["registration_image_np"] = frame
         return redirect(url_for("add_info"))
 
     flash("File upload failed", "error")
@@ -642,25 +651,12 @@ def capture():
         frame = current_frame
     if frame is not None:
 
-        ref = db.reference("Students")
+        filename = get_next_student_filename()
+        public_id = f"students/{filename[:-4]}"
+        upload_image_array(frame, public_id)
 
-        try:
-
-            studentId = len(ref.get())
-
-        except TypeError:
-            studentId = 1
-
-        filename = f"{studentId}.png"
         session["registration_filename"] = filename
-
-        cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], filename), frame)
-
-        val, err = upload_database(filename)
-
-        if val:
-            flash(err, "error")
-            return redirect(url_for("register"))
+        session["registration_image_np"] = frame
 
     return redirect(url_for("add_info"))
 
@@ -682,9 +678,12 @@ def submit_info():
             flash("Please capture a face image before submitting your information.", "error")
             return redirect(url_for("register"))
 
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        if not os.path.exists(file_path):
-            flash("Image not found. Please capture or upload again.", "error")
+        if "registration_image_np" in session:
+            data = session["registration_image_np"]
+        elif "registration_image_b64" in session:
+            data = b64_to_cv2("data:image/png;base64," + session["registration_image_b64"])
+        else:
+            flash("Image not found in session. Please recapture.", "error")
             return redirect(url_for("register"))
 
         name = request.form.get("name")
@@ -697,7 +696,6 @@ def submit_info():
         hashed_password = generate_password_hash(password)
 
         studentId, _ = os.path.splitext(filename)
-        data = cv2.imread(file_path)
 
         faces = detect_faces(data)
 
@@ -743,6 +741,8 @@ def submit_info():
             ref.child(key).set(value)
 
         session.pop("registration_filename", None)
+        session.pop("registration_image_np", None)
+        session.pop("registration_image_b64", None)
         return redirect(url_for("success", filename=filename))
 
     except Exception as e:
