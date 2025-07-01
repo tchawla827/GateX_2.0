@@ -537,12 +537,17 @@ def markout():
                         break
 
             if not has_approved_request:
+                error_message = (
+                    f"No approved outpass request found for today for {student_name}."
+                    if student_name else
+                    "No approved outpass request found for today."
+                )
                 if "file" in request.files:
-                    flash("No approved outpass request found for today.", "error")
+                    flash(error_message, "error")
                     return redirect(url_for("mark_out"))
                 return {
                     "status": "error",
-                    "message": "No approved outpass request found for today.",
+                    "message": error_message,
                 }, 403
 
             out_students_ref = db.reference("Out Students")
